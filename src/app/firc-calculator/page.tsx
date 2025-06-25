@@ -22,11 +22,11 @@ export default function FircCalculatorPage() {
     });
   };
 
-  const handleReset = () => {
+  const handleUploadAnother = () => {
     window.location.reload();
   };
 
-  const handleGetInTouch = () => {
+  const handleContactClick = () => {
     // Placeholder for "Get in Touch" logic
     alert('Get in Touch clicked!');
   };
@@ -58,8 +58,8 @@ export default function FircCalculatorPage() {
           {formState.data && !isPending ? (
             <ResultsCard 
                 data={formState.data} 
-                onReset={handleReset}
-                onGetInTouch={handleGetInTouch}
+                onUploadAnother={handleUploadAnother}
+                onContactClick={handleContactClick}
                 onCopyLink={handleCopyLink}
             />
           ) : (

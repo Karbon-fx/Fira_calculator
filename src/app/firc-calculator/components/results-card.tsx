@@ -2,8 +2,8 @@
 /**
  * @fileoverview ResultsCard component displays the FIRA analysis results.
  * @prop {FircResult} data - The calculated data from the FIRA document.
- * @prop {() => void} onReset - Handler to reset the form and upload a new file.
- * @prop {() => void} onGetInTouch - Handler for the "Get in Touch" button.
+ * @prop {() => void} onUploadAnother - Handler to reset the form and upload a new file.
+ * @prop {() => void} onContactClick - Handler for the "Get in Touch" button.
  * @prop {() => void} onCopyLink - Handler for the "Copy Links" button.
  */
 import { useState } from 'react';
@@ -15,8 +15,8 @@ import { Copy, Upload } from 'lucide-react';
 
 interface ResultsCardProps {
   data: FircResult;
-  onReset: () => void;
-  onGetInTouch: () => void;
+  onUploadAnother: () => void;
+  onContactClick: () => void;
   onCopyLink: () => void;
 }
 
@@ -60,21 +60,18 @@ const InfoIcon = ({ className }: { className?: string }) => (
 
 
 const formatValue = (value: number, type: 'currency' | 'number', digits = 2) => {
-    if (type === 'currency') {
-        return new Intl.NumberFormat('en-IN', {
-            style: 'currency',
-            currency: 'INR',
-            minimumFractionDigits: digits,
-            maximumFractionDigits: digits,
-        }).format(value);
-    }
-    return new Intl.NumberFormat('en-IN', {
+    const options: Intl.NumberFormatOptions = {
         minimumFractionDigits: digits,
         maximumFractionDigits: digits,
-    }).format(value);
+    };
+    if (type === 'currency') {
+        options.style = 'currency';
+        options.currency = 'INR';
+    }
+    return new Intl.NumberFormat('en-IN', options).format(value);
 }
 
-export function ResultsCard({ data, onReset, onGetInTouch, onCopyLink }: ResultsCardProps) {
+export function ResultsCard({ data, onUploadAnother, onContactClick, onCopyLink }: ResultsCardProps) {
   const [activeTab, setActiveTab] = useState('totalCost');
   const tabs = [
     { id: 'totalCost', label: 'Total Cost' },
@@ -86,97 +83,105 @@ export function ResultsCard({ data, onReset, onGetInTouch, onCopyLink }: Results
     switch (activeTab) {
         case 'totalCost':
             return {
-                value: formatValue(data.totalCost, 'currency'),
-                label: 'Total hidden FX charges'
+                value: formatValue(data.hiddenCost, 'currency'),
+                description: `on the mid-market rate of INR ${formatValue(data.midMarketRate, 'number', 2)}`
             };
         case 'paise':
             return {
                 value: formatValue(data.paisePerUnit, 'number'),
-                label: 'Paise lost per foreign currency unit'
+                description: 'Paise lost per foreign currency unit'
             };
         case 'bps':
             return {
                 value: formatValue(data.basisPoints, 'number'),
-                label: 'Basis Points (bps) Markup'
+                description: 'Basis Points (bps) Markup'
             };
         default:
-            return { value: '', label: '' };
+            return { value: '', description: '' };
     }
   };
 
+  const tabContent = renderTabContent();
+
   return (
     <div className="w-full max-w-xl mx-auto bg-card rounded-2xl p-6 sm:p-8 shadow-card-shadow animate-in fade-in-50 slide-in-from-bottom-10 duration-500">
-      <div className="bg-muted rounded-lg p-1 flex items-center space-x-1 mb-6">
+      <div role="tablist" aria-label="Cost analysis tabs" className="bg-muted rounded-lg p-1 flex items-center mb-6">
         {tabs.map(tab => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              'flex-1 text-center font-semibold text-sm sm:text-base py-2 px-2 sm:px-4 rounded-lg transition-colors',
-              activeTab === tab.id
-                ? 'bg-card text-card-foreground shadow-sm'
-                : 'text-muted-foreground hover:bg-card/50'
-            )}
+            id={`tab-${tab.id}`}
             role="tab"
             aria-selected={activeTab === tab.id}
+            aria-controls={`tabpanel-${tab.id}`}
+            onClick={() => setActiveTab(tab.id)}
+            className={cn(
+              'flex-1 text-center font-semibold text-base py-2 px-4 rounded-md transition-all outline-none',
+              'focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
+              activeTab === tab.id
+                ? 'bg-white text-card-foreground shadow-sm'
+                : 'text-muted-foreground hover:bg-white/50'
+            )}
           >
             {tab.label}
           </button>
         ))}
       </div>
-
-      <div className="bg-card text-center mb-6">
-        <div className="bg-destructive/10 rounded-lg p-4">
+      
+      <div id={`tabpanel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`}>
+        <div className="border rounded-lg p-4 text-center mb-6">
             <div className="flex items-center justify-center gap-2 text-destructive text-sm font-semibold mb-1">
                 <BankIcon />
                 {data.bankName} charged you
             </div>
             <p className="text-4xl font-bold text-foreground">
-                {formatValue(data.totalCost, 'currency')}
+                {tabContent.value}
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-                on the mid-market rate of INR {formatValue(data.midMarketRate, 'number', 2)}
+                {tabContent.description}
             </p>
         </div>
       </div>
 
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Information on FIRA</h3>
-        <div className="space-y-3 text-sm">
-            <DetailRow label="Date of transaction" value={format(new Date(data.transactionDate), 'MMM dd, yyyy')} />
-            <DetailRow label="Purpose code" value={data.purposeCode} />
-            <DetailRow label="USD Amount" value={`${formatValue(data.foreignCurrencyAmount, 'number')} USD`} />
-            <DetailRow label="User FX rate on FIRA" value={`${formatValue(data.bankFxRateOnFira, 'number')} INR`} />
-            <DetailRow label="INR after FX" value={`${formatValue(data.inrCredited, 'number')} INR`} />
-        </div>
-      </div>
-      
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Calculations</h3>
-        <div className="space-y-3 text-sm">
-            <DetailRow label={`Mid-market Rate on ${format(new Date(data.transactionDate), 'MMM dd, yyyy')}`} value={`${formatValue(data.midMarketRate, 'number')} INR`} />
-            <DetailRow 
-                label="Effective FX spread in INR" 
-                value={
-                    <span className="flex items-center gap-1.5">
-                        {`${formatValue(data.spread, 'number')} INR`}
-                        <InfoIcon className="text-muted-foreground" />
-                    </span>
-                } 
-            />
-            <div className="bg-muted/80 rounded-lg p-3 flex justify-between items-center font-medium">
-                <p>Effective Total Cost</p>
-                <p className="flex items-center gap-1.5">
-                    {formatValue(data.totalCost, 'currency')}
-                    <InfoIcon className="text-muted-foreground" />
-                </p>
+      <div className="bg-[#F9FAFB] rounded-lg p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
+            <div>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Information on FIRA</h3>
+                <div className="space-y-4 text-sm">
+                    <DetailRow label="Date of transaction" value={format(new Date(data.transactionDate), 'MMM dd, yyyy')} />
+                    <DetailRow label="Purpose code" value={data.purposeCode} />
+                    <DetailRow label="USD Amount" value={`${formatValue(data.foreignCurrencyAmount, 'number')} USD`} />
+                    <DetailRow label="User FX rate on FIRA" value={`${formatValue(data.bankRate, 'number')} INR`} />
+                    <DetailRow label="INR after FX" value={`${formatValue(data.inrCredited, 'currency', 2).replace('₹','')} INR`} />
+                </div>
+            </div>
+            <div>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Calculations</h3>
+                <div className="space-y-4 text-sm">
+                    <DetailRow label={`Mid-market Rate on ${format(new Date(data.transactionDate), 'MMM dd, yyyy')}`} value={`${formatValue(data.midMarketRate, 'number')} INR`} />
+                    <DetailRow 
+                        label="Effective FX spread in INR" 
+                        value={
+                            <span className="flex items-center gap-1.5">
+                                {`${formatValue(data.spread, 'number')} INR`}
+                                <InfoIcon className="text-muted-foreground" />
+                            </span>
+                        } 
+                    />
+                     <div className="bg-white border rounded-lg p-3 flex justify-between items-center font-medium mt-4">
+                        <p>Effective Total Cost</p>
+                        <p className="flex items-center gap-1.5">
+                            {formatValue(data.hiddenCost, 'currency')}
+                            <InfoIcon className="text-muted-foreground" />
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
       </div>
 
-      <div className="text-center">
+      <div className="text-center mt-6">
         <p className="font-semibold text-foreground mb-4">Need better pricing that is simple & transparent?</p>
-        <Button size="lg" className="w-full sm:w-auto" onClick={onGetInTouch}>
+        <Button size="lg" className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90" onClick={onContactClick}>
             Get in Touch
         </Button>
       </div>
@@ -185,7 +190,7 @@ export function ResultsCard({ data, onReset, onGetInTouch, onCopyLink }: Results
         <button onClick={onCopyLink} className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
             <Copy size={16}/> Copy Links
         </button>
-        <button onClick={onReset} className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+        <button onClick={onUploadAnother} className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
             <Upload size={16} /> Upload Another FIRA
         </button>
       </div>
@@ -203,4 +208,4 @@ function DetailRow({ label, value }: { label: string; value: string | React.Reac
         <p className="font-medium text-foreground text-right">{value}</p>
       </div>
     );
-  }
+}

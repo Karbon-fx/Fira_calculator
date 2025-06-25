@@ -13,12 +13,12 @@ export interface FircResult {
   transactionDate: string;
   purposeCode: string;
   foreignCurrencyAmount: number;
-  bankFxRateOnFira: number;
+  bankRate: number;
   inrCredited: number;
   midMarketRate: number;
   effectiveBankRate: number;
   spread: number;
-  totalCost: number;
+  hiddenCost: number;
   paisePerUnit: number;
   basisPoints: number;
 }
@@ -81,7 +81,7 @@ export async function processFiraDocument(
 
     const effectiveBankRate = C / A;
     const spread = D - effectiveBankRate;
-    const totalCost = spread * A;
+    const hiddenCost = spread * A;
     const paisePerUnit = spread * 100;
     const basisPoints = (spread / D) * 10000;
 
@@ -90,12 +90,12 @@ export async function processFiraDocument(
         transactionDate: extractedData.transactionDate,
         purposeCode: extractedData.purposeCode || 'N/A',
         foreignCurrencyAmount: A,
-        bankFxRateOnFira: extractedData.bankFxRate,
+        bankRate: extractedData.bankFxRate,
         inrCredited: C,
         midMarketRate: D,
         effectiveBankRate,
         spread,
-        totalCost,
+        hiddenCost: hiddenCost,
         paisePerUnit,
         basisPoints,
     };
