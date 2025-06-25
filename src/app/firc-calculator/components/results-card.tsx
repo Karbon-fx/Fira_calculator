@@ -94,7 +94,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
               'flex-1 flex items-center justify-center py-[6px] px-[12px] h-[32px] rounded-[4px] font-sans text-[14px] leading-[20px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#145AFF]',
               activeTab === tab.id
                 ? 'bg-white text-[#0A1F44] shadow-sm'
-                : 'bg-transparent text-[#6A7280] hover:bg-white/50'
+                : 'bg-transparent text-[#475569] hover:bg-white/50'
             )}
           >
             {tab.label}
@@ -139,7 +139,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
                 value={
                     <span className="flex items-center gap-1.5">
                         {`${formatNumber(data.spread)} INR`}
-                        <InfoIcon className="text-gray-400" />
+                        <InfoIcon className="text-[#475569]" />
                     </span>
                 } 
             />
@@ -150,7 +150,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
             <span className="font-sans text-[16px] leading-[18px] font-medium text-black">Effective Total Cost</span>
             <span className="flex items-center gap-2 font-sans text-[16px] leading-[18px] font-medium text-black">
                 {formatNumber(data.hiddenCost, 'INR')}
-                <InfoIcon className="text-gray-400" />
+                <InfoIcon className="text-[#475569]" />
             </span>
         </div>
       </div>
@@ -179,7 +179,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
 function DetailRow({ label, value }: { label: string; value: string | React.ReactNode }) {
     return (
       <div className="flex justify-between items-center py-1 gap-4 w-full h-[28px]">
-        <p className="font-sans text-[14px] leading-[20px] font-medium text-[#6A7280]">{label}</p>
+        <p className="font-sans text-[14px] leading-[20px] font-medium text-[#475569]">{label}</p>
         <div className="font-sans text-[14px] leading-[20px] font-medium text-[#1F1F1F] text-right">{value}</div>
       </div>
     );
