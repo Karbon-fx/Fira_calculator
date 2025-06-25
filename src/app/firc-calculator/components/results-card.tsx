@@ -259,7 +259,7 @@ export function ResultsCard({
       )}`,
     },
     paise: {
-      value: `${formatNumber(data.paisePerUnit, 'INR')}`,
+      value: `${formatNumber(data.spread, 'INR')}`,
       description: `on the mid-market rate of INR ${formatNumber(
         data.midMarketRate,
         undefined,
@@ -308,8 +308,9 @@ export function ResultsCard({
           id={`tabpanel-${activeTab}`}
           role="tabpanel"
           aria-labelledby={`tab-${activeTab}`}
-          className="w-[418px] h-[118px] border-[1.84px] border-[#EEF3F7] rounded-[12px] flex flex-col items-start justify-center p-[16px_12px] gap-[8px] self-stretch"
+          className="w-[418px] h-auto border-[1px] border-[#EEF3F7] rounded-[12px] flex flex-col items-start justify-center p-[16px_12px] gap-[8px] self-stretch"
         >
+          <div className="flex flex-col items-start gap-[8px] self-stretch">
             <p className="font-sans font-semibold text-[16px] leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
               {data.bankName} charged you
             </p>
@@ -319,6 +320,7 @@ export function ResultsCard({
             <p className="font-sans font-normal text-[14px] leading-[16px] tracking-[-0.14px] text-[#0A1F44]">
               {tabContent.description}
             </p>
+          </div>
         </div>
 
         <div className="w-[418px] flex flex-col items-start gap-3 self-stretch">
@@ -360,29 +362,27 @@ export function ResultsCard({
               )}`}
               value={`${formatNumber(data.midMarketRate, undefined, 2)} INR`}
             />
-            {activeTab !== 'totalCost' && (
-              <DetailRow
-                label="Effective FX spread in INR"
-                value={
-                  <span className="flex items-center gap-1.5">
-                    {`${formatNumber(data.spread, undefined, 2)}`}
-                    <Tooltip delayDuration={100}>
-                      <TooltipTrigger asChild>
-                        <button
-                          aria-label="More info about Effective FX spread"
-                          className="flex items-center justify-center"
-                        >
-                          <InfoIcon />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-transparent border-none p-0 shadow-none">
-                        <SpreadTooltipContent data={data} />
-                      </TooltipContent>
-                    </Tooltip>
-                  </span>
-                }
-              />
-            )}
+            <DetailRow
+              label="Effective FX spread in INR"
+              value={
+                <span className="flex items-center gap-1.5">
+                  {`${formatNumber(data.spread, undefined, 2)}`}
+                  <Tooltip delayDuration={100}>
+                    <TooltipTrigger asChild>
+                      <button
+                        aria-label="More info about Effective FX spread"
+                        className="flex items-center justify-center"
+                      >
+                        <InfoIcon />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-transparent border-none p-0 shadow-none">
+                      <SpreadTooltipContent data={data} />
+                    </TooltipContent>
+                  </Tooltip>
+                </span>
+              }
+            />
           </div>
         </div>
 
