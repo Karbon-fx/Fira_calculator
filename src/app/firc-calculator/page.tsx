@@ -1,7 +1,6 @@
 'use client';
 
-import { useFormState } from 'react-dom';
-import { useEffect, useState, useTransition } from 'react';
+import { useActionState, useEffect, useState, useTransition } from 'react';
 import { processFiraDocument } from './actions';
 import { UploadForm } from './components/upload-form';
 import { ResultsCard } from './components/results-card';
@@ -14,7 +13,7 @@ const initialState = {
 };
 
 export default function FircCalculatorPage() {
-  const [formState, formAction] = useFormState(processFiraDocument, initialState);
+  const [formState, formAction] = useActionState(processFiraDocument, initialState);
   const [isPending, startTransition] = useTransition();
 
   const handleFormAction = (formData: FormData) => {
