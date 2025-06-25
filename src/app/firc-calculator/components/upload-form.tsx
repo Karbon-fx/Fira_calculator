@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useRef, DragEvent, useTransition, useEffect } from 'react';
-import { useActionState } from 'react';
+import { useState, useRef, DragEvent } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { XCircle } from 'lucide-react';
-import { processFiraDocument } from '../actions';
-import type { FircResult } from '../actions';
+import { z } from 'zod';
+
 
 // Figma: Upload Icon for Dropzone
 const UploadIcon = ({ className }: { className?: string }) => (
@@ -29,48 +28,49 @@ const InfoIcon = ({ className }: { className?: string }) => (
     </div>
 );
 
+const MAX_FILE_SIZE_MB = 10;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const ACCEPTED_FILE_TYPES = ['application/pdf', 'image/png', 'image/jpeg'];
 
-const initialState: { data: FircResult | null; error: string | null; } = {
-  data: null,
-  error: null,
-};
+const fileSchema = z
+  .instanceof(File)
+  .refine((file) => file.size > 0, 'File is empty.')
+  .refine(
+    (file) => file.size <= MAX_FILE_SIZE_BYTES,
+    `File size must be less than ${MAX_FILE_SIZE_MB}MB.`
+  )
+  .refine(
+    (file) => ACCEPTED_FILE_TYPES.includes(file.type),
+    'Invalid file type. Only PDF, PNG, and JPEG are accepted.'
+  );
 
-export function UploadForm({ onComplete, onProcessingChange }: { 
-  onComplete: (data: FircResult) => void;
-  onProcessingChange: (isProcessing: boolean) => void;
+export function UploadForm({ onFileSelect }: { 
+  onFileSelect: (file: File) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [formState, formAction] = useActionState(processFiraDocument, initialState);
-  const [isPending, startTransition] = useTransition();
-
-  useEffect(() => {
-    onProcessingChange(isPending);
-  }, [isPending, onProcessingChange]);
-
-  useEffect(() => {
-    if (formState.data && !isPending) {
-      onComplete(formState.data);
-    }
-  }, [formState, onComplete, isPending]);
   
-  const handleFileSelect = (selectedFile: File | null) => {
-    if (selectedFile && !isPending) {
+  const handleFile = (selectedFile: File | null) => {
+    if (selectedFile) {
+      const validation = fileSchema.safeParse(selectedFile);
+      if (!validation.success) {
+        setError(validation.error.errors[0].message);
+        setFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
+      setError(null);
       setFile(selectedFile);
-      const formData = new FormData();
-      formData.append('firaDocument', selectedFile);
-      startTransition(() => {
-        formAction(formData);
-      });
+      onFileSelect(selectedFile);
     }
   };
 
   const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!isPending) setIsDragging(true);
+    setIsDragging(true);
   };
 
   const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
@@ -89,7 +89,7 @@ export function UploadForm({ onComplete, onProcessingChange }: {
     e.stopPropagation();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFileSelect(e.dataTransfer.files[0]);
+      handleFile(e.dataTransfer.files[0]);
       e.dataTransfer.clearData();
     }
   };
@@ -98,12 +98,12 @@ export function UploadForm({ onComplete, onProcessingChange }: {
     <>
       <div className="w-[450px] bg-white border border-[#F0F0F0] rounded-[16px] py-[48px] px-[32px] flex flex-col items-center gap-6">
         
-        {formState.error && !isPending && (
+        {error && (
           <div className="w-full">
             <Alert variant="destructive">
               <XCircle className="h-4 w-4" />
-              <AlertTitle>Analysis Failed</AlertTitle>
-              <AlertDescription>{formState.error}</AlertDescription>
+              <AlertTitle>Invalid File</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
           </div>
         )}
@@ -113,22 +113,19 @@ export function UploadForm({ onComplete, onProcessingChange }: {
             Upload your FIRA (Foreign Inward Remittance Advice) to get a detailed breakdown of your actual costs.
           </h1>
         </div>
-
-        {/* Figma Frame: 1000005240 - Drag-and-Drop Zone */}
+        
         <div
           className={cn(
-            "w-[386px] h-[240px] flex flex-col items-center justify-center gap-4 bg-[#F5F8FF] border border-dashed border-[#145AFF] rounded-[8px] transition-colors duration-200",
+            "w-[386px] h-[240px] flex flex-col items-center justify-center gap-4 bg-[#F5F8FF] border border-dashed border-[#145AFF] rounded-[8px] transition-colors duration-200 cursor-pointer",
             isDragging && "bg-[#E9F2FB]",
-            isPending ? "cursor-not-allowed opacity-70" : "cursor-pointer",
           )}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
-          onClick={() => !isPending && fileInputRef.current?.click()}
+          onClick={() => fileInputRef.current?.click()}
           role="button"
           aria-label="Upload FIRA document"
-          aria-disabled={isPending}
         >
           <input
             ref={fileInputRef}
@@ -136,8 +133,7 @@ export function UploadForm({ onComplete, onProcessingChange }: {
             name="firaDocument"
             className="hidden"
             accept=".pdf,.png,.jpg,.jpeg"
-            onChange={(e) => handleFileSelect(e.target.files ? e.target.files[0] : null)}
-            disabled={isPending}
+            onChange={(e) => handleFile(e.target.files ? e.target.files[0] : null)}
           />
           <UploadIcon />
           <div className="text-center">
@@ -148,7 +144,7 @@ export function UploadForm({ onComplete, onProcessingChange }: {
               {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : 'We accept files under 10MB in PDF, PNG, or JPEG format.'}
             </p>
           </div>
-          {file && !isPending && (
+          {file && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -164,7 +160,6 @@ export function UploadForm({ onComplete, onProcessingChange }: {
           )}
         </div>
         
-        {/* Figma Frame: 1000005132 - Privacy Disclaimer */}
         <div className="w-[386px] flex items-start gap-1.5 p-[16px_12px] bg-[#F5F8FF] border border-[#DDE4ED] rounded-[12px]">
           <InfoIcon />
           <p className="font-sans text-[12px] leading-[16px] font-bold text-[#000000]">

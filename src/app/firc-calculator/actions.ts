@@ -1,12 +1,8 @@
 'use server';
 
 import { extractFiraData } from '@/ai/flows/extract-fira-data';
-import { z } from 'zod';
 
-const FREECURRENCY_API_KEY = 'fca_live_kKJhVpXCQYJEOWhsFSQNXM3fvoXQaPbn0S3BSzT0';
-const MAX_FILE_SIZE_MB = 10;
-const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
-const ACCEPTED_FILE_TYPES = ['application/pdf', 'image/png', 'image/jpeg'];
+const FREECURRENCY_API_KEY = process.env.FREECURRENCY_API_KEY || 'fca_live_kKJhVpXCQYJEOWhsFSQNXM3fvoXQaPbn0S3BSzT0';
 
 export interface FircResult {
   bankName: string;
@@ -23,34 +19,13 @@ export interface FircResult {
   basisPoints: number;
 }
 
-const fileSchema = z
-  .instanceof(File)
-  .refine((file) => file.size > 0, 'File is empty.')
-  .refine(
-    (file) => file.size <= MAX_FILE_SIZE_BYTES,
-    `File size must be less than ${MAX_FILE_SIZE_MB}MB.`
-  )
-  .refine(
-    (file) => ACCEPTED_FILE_TYPES.includes(file.type),
-    'Invalid file type. Only PDF, PNG, and JPEG are accepted.'
-  );
-  
-export async function processFiraDocument(
-  prevState: any,
-  formData: FormData
-): Promise<{ data: FircResult | null; error: string | null; }> {
+export async function analyzeFira({
+  firaDataUri,
+}: {
+  firaDataUri: string;
+}): Promise<{ data: FircResult | null; error: string | null }> {
   try {
-    const file = formData.get('firaDocument') as File;
-    const validatedFile = fileSchema.safeParse(file);
-
-    if (!validatedFile.success) {
-      return { data: null, error: validatedFile.error.errors[0].message };
-    }
-
-    const fileBuffer = await file.arrayBuffer();
-    const dataUri = `data:${file.type};base64,${Buffer.from(fileBuffer).toString('base64')}`;
-
-    const extractedData = await extractFiraData({ firaDataUri: dataUri });
+    const extractedData = await extractFiraData({ firaDataUri });
 
     if (!extractedData.transactionDate || !extractedData.foreignCurrencyAmount || !extractedData.inrCredited) {
         return { data: null, error: 'OCR failed to extract necessary data. Please try another document or a clearer image.' };
