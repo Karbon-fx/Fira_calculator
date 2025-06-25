@@ -32,7 +32,7 @@ export async function analyzeFira({
       return { data: null, error: extractedData.error };
     }
 
-    if (!extractedData.transactionDate || !extractedData.foreignCurrencyAmount || !extractedData.inrCredited || !extractedData.foreignCurrencyCode) {
+    if (!extractedData.transactionDate || !extractedData.foreignCurrencyAmount || !extractedData.inrCredited || !extractedData.foreignCurrencyCode || !extractedData.bankFxRate) {
         return { data: null, error: 'OCR failed to extract all required data. Please try another document or a clearer image.' };
     }
     
@@ -61,11 +61,14 @@ export async function analyzeFira({
       return { data: null, error: 'Foreign currency amount cannot be zero.' };
     }
 
-    const effectiveBankRate = C / A;
-    const spread = D - effectiveBankRate;
+    // Use the extracted bankFxRate directly for calculations
+    const spread = D - extractedData.bankFxRate;
     const hiddenCost = spread * A;
     const paisePerUnit = spread * 100;
     const basisPoints = (spread / D) * 10000;
+
+    // For display purposes, the 'effective' rate is still what the user actually received.
+    const effectiveBankRate = C / A;
 
     const result: FircResult = {
         bankName: extractedData.bankName || 'Your Bank',
@@ -76,7 +79,7 @@ export async function analyzeFira({
         bankRate: extractedData.bankFxRate,
         inrCredited: C,
         midMarketRate: D,
-        effectiveBankRate,
+        effectiveBankRate: effectiveBankRate,
         spread,
         hiddenCost: hiddenCost,
         paisePerUnit,
