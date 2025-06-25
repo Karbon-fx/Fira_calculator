@@ -10,6 +10,21 @@ import type { FircResult } from './actions';
 
 type View = 'upload' | 'loading' | 'result' | 'error';
 
+/**
+ * Converts an ArrayBuffer to a Base64 string in a browser-safe way.
+ * @param buffer The ArrayBuffer to convert.
+ * @returns A Base64-encoded string.
+ */
+function arrayBufferToBase64(buffer: ArrayBuffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
 export default function FircCalculatorPage() {
   const [view, setView] = useState<View>('upload');
   const [resultData, setResultData] = useState<FircResult | null>(null);
@@ -21,9 +36,8 @@ export default function FircCalculatorPage() {
       const processFile = async () => {
         try {
           const fileBuffer = await fileToProcess.arrayBuffer();
-          const dataUri = `data:${
-            fileToProcess.type
-          };base64,${Buffer.from(fileBuffer).toString('base64')}`;
+          const base64String = arrayBufferToBase64(fileBuffer);
+          const dataUri = `data:${fileToProcess.type};base64,${base64String}`;
 
           const extractionPromise = analyzeFira({ firaDataUri: dataUri });
 
@@ -31,7 +45,6 @@ export default function FircCalculatorPage() {
             setTimeout(() => reject(new Error('timeout')), 15000) // 15 second timeout
           );
 
-          // @ts-ignore
           const result = await Promise.race([extractionPromise, timeoutPromise]);
 
           if (result.error) {
