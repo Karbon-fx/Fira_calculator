@@ -8,6 +8,7 @@ export interface FircResult {
   bankName: string;
   transactionDate: string;
   purposeCode: string;
+  foreignCurrencyCode: string;
   foreignCurrencyAmount: number;
   bankRate: number;
   inrCredited: number;
@@ -27,23 +28,29 @@ export async function analyzeFira({
   try {
     const extractedData = await extractFiraData({ firaDataUri });
 
-    if (!extractedData.transactionDate || !extractedData.foreignCurrencyAmount || !extractedData.inrCredited) {
-        return { data: null, error: 'OCR failed to extract necessary data. Please try another document or a clearer image.' };
+    if (extractedData.error) {
+      return { data: null, error: extractedData.error };
+    }
+
+    if (!extractedData.transactionDate || !extractedData.foreignCurrencyAmount || !extractedData.inrCredited || !extractedData.foreignCurrencyCode) {
+        return { data: null, error: 'OCR failed to extract all required data. Please try another document or a clearer image.' };
     }
     
-    const fxApiUrl = `https://api.freecurrencyapi.com/v1/historical?apikey=${FREECURRENCY_API_KEY}&date=${extractedData.transactionDate}&base_currency=USD&currencies=INR`;
+    const fxApiUrl = `https://api.freecurrencyapi.com/v1/historical?apikey=${FREECURRENCY_API_KEY}&date=${extractedData.transactionDate}&base_currency=${extractedData.foreignCurrencyCode}&currencies=INR`;
     
     const fxResponse = await fetch(fxApiUrl);
     
     if (!fxResponse.ok) {
-        return { data: null, error: `Could not fetch FX rate for ${extractedData.transactionDate}. The API may not have data for this date.` };
+        const apiError = await fxResponse.json();
+        const errorMessage = apiError.message || `Could not fetch FX rate for ${extractedData.transactionDate}. The API may not have data for this date or currency.`;
+        return { data: null, error: errorMessage };
     }
 
     const fxData = await fxResponse.json();
     const midMarketRate = fxData.data?.[extractedData.transactionDate]?.INR;
 
     if (!midMarketRate) {
-        return { data: null, error: `FX rate not found for ${extractedData.transactionDate}.` };
+        return { data: null, error: `FX rate not found for ${extractedData.foreignCurrencyCode} on ${extractedData.transactionDate}.` };
     }
 
     const A = extractedData.foreignCurrencyAmount;
@@ -64,6 +71,7 @@ export async function analyzeFira({
         bankName: extractedData.bankName || 'Your Bank',
         transactionDate: extractedData.transactionDate,
         purposeCode: extractedData.purposeCode || 'N/A',
+        foreignCurrencyCode: extractedData.foreignCurrencyCode,
         foreignCurrencyAmount: A,
         bankRate: extractedData.bankFxRate,
         inrCredited: C,

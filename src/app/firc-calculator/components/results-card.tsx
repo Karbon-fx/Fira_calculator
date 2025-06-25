@@ -104,14 +104,14 @@ const CopyIcon = () => (
 // --- HELPERS ---
 const formatNumber = (
   value: number,
-  currency?: 'INR' | 'USD',
+  currencyCode?: string,
   decimals = 2
 ) => {
   if (typeof value !== 'number' || isNaN(value)) {
-    return currency === 'INR'
+    return currencyCode === 'INR'
       ? '₹0.00'
-      : currency === 'USD'
-        ? '$0.00'
+      : currencyCode
+        ? `${currencyCode} 0.00`
         : '0.00';
   }
   const options = {
@@ -122,11 +122,14 @@ const formatNumber = (
     Math.abs(value)
   );
 
-  if (currency === 'INR') {
+  if (currencyCode === 'INR') {
     return `₹${formatted}`;
   }
-  if (currency === 'USD') {
+  if (currencyCode === 'USD') {
     return `$${formatted}`;
+  }
+  if (currencyCode) {
+    return `${currencyCode} ${formatted}`;
   }
   return formatted;
 };
@@ -157,7 +160,7 @@ function SpreadTooltipContent({ data }: { data: FircResult }) {
     <div className="flex flex-col items-start p-3 bg-[#0A1F44] rounded-lg w-[350px] gap-2">
       <TooltipRow
         label={`MMR on ${transactionDate}`}
-        value={`${formatNumber(data.midMarketRate, undefined, 2)} INR`}
+        value={`${formatNumber(data.midMarketRate, 'INR', 2)}`}
       />
       <TooltipRow
         label="User FX rate"
@@ -167,7 +170,7 @@ function SpreadTooltipContent({ data }: { data: FircResult }) {
       <div className="w-full border-b border-white/20 my-1"></div>
       <TooltipRow
         label="Effective FX spread in INR"
-        value={`${formatNumber(data.spread, undefined, 6)} INR`}
+        value={`${formatNumber(data.spread, 'INR', 6)}`}
       />
     </div>
   );
@@ -178,11 +181,11 @@ function TotalCostTooltipContent({ data }: { data: FircResult }) {
     <div className="flex flex-col items-start gap-2 p-3 bg-[#0A1F44] rounded-lg w-[358px] text-sm">
       <TooltipRow
         label="FX spread in INR"
-        value={`${formatNumber(data.spread, undefined, 2)} INR`}
+        value={`${formatNumber(data.spread, 'INR', 2)}`}
       />
       <TooltipRow
-        label="&times; USD Amount"
-        value={`${formatNumber(data.foreignCurrencyAmount, undefined, 2)} USD`}
+        label={`&times; ${data.foreignCurrencyCode} Amount`}
+        value={`${formatNumber(data.foreignCurrencyAmount, data.foreignCurrencyCode, 2)}`}
       />
       <div className="w-full border-b border-white/20 my-1"></div>
       <TooltipRow label="Total FX Cost" value={formatNumber(data.hiddenCost, 'INR')} />
@@ -195,7 +198,7 @@ function BpsTooltipContent({ data }: { data: FircResult }) {
     <div className="flex flex-col items-start p-3 bg-[#0A1F44] rounded-lg w-[350px] gap-2">
       <TooltipRow
         label="FX spread in INR"
-        value={`${formatNumber(data.spread, undefined, 2)} INR`}
+        value={`${formatNumber(data.spread, 'INR', 2)}`}
       />
       <TooltipRow
         label="&divide; Mid-market rate"
@@ -226,8 +229,8 @@ export function ResultsCard({
 
   const tabs = [
     { id: 'totalCost', label: 'Total Cost' },
-    { id: 'paise', label: 'Paise' },
-    { id: 'bps', label: 'Basis Points(bps)' },
+    { id: 'paise', label: 'Paise per Unit' },
+    { id: 'bps', label: 'Basis Points (bps)' },
   ];
 
   const handleCopy = () => {
@@ -235,8 +238,8 @@ export function ResultsCard({
 - Bank: ${data.bankName}
 - Transaction Date: ${format(new Date(data.transactionDate), 'MMM dd, yyyy')}
 - Total Hidden Cost: ${formatNumber(data.hiddenCost, 'INR')}
-- Mid-Market Rate: ${formatNumber(data.midMarketRate, undefined)} INR
-- Effective FX Spread: ${formatNumber(data.spread, undefined, 6)} INR
+- Mid-Market Rate: ${formatNumber(data.midMarketRate, 'INR')}
+- Effective FX Spread: ${formatNumber(data.spread, 'INR', 6)}
 - Basis Points: ${formatNumber(data.basisPoints, undefined, 0)}
     `;
     navigator.clipboard
@@ -252,25 +255,25 @@ export function ResultsCard({
   const tabContent = {
     totalCost: {
       value: `${formatNumber(data.hiddenCost, 'INR')}`,
-      description: `on the mid-market rate of INR ${formatNumber(
+      description: `on the mid-market rate of ${formatNumber(
         data.midMarketRate,
-        undefined,
+        'INR',
         2
       )}`,
     },
     paise: {
       value: `${formatNumber(data.spread, 'INR')}`,
-      description: `on the mid-market rate of INR ${formatNumber(
+      description: `on the mid-market rate of ${formatNumber(
         data.midMarketRate,
-        undefined,
+        'INR',
         2
       )}`,
     },
     bps: {
       value: `${formatNumber(data.basisPoints, undefined, 5)} bps`,
-      description: `on the mid-market rate of INR ${formatNumber(
+      description: `on the mid-market rate of ${formatNumber(
         data.midMarketRate,
-        undefined,
+        'INR',
         2
       )}`,
     },
@@ -282,7 +285,7 @@ export function ResultsCard({
         <div
           role="tablist"
           aria-label="Cost analysis tabs"
-          className="w-[418px] h-10 p-1 bg-[#F1F5F9] rounded-[6px] flex flex-row items-center self-stretch gap-1"
+          className="w-full p-1 bg-[#F1F5F9] rounded-[6px] flex flex-row items-center self-stretch gap-1"
         >
           {tabs.map((tab) => (
             <button
@@ -308,22 +311,22 @@ export function ResultsCard({
           id={`tabpanel-${activeTab}`}
           role="tabpanel"
           aria-labelledby={`tab-${activeTab}`}
-          className="w-[418px] h-auto border-[1px] border-[#EEF3F7] rounded-[12px] flex flex-col items-start justify-center p-[16px_12px] gap-[8px] self-stretch"
+          className="w-full border border-[#EEF3F7] rounded-[12px] flex flex-col items-start justify-center p-[16px_12px] gap-[8px] self-stretch"
         >
-          <div className="flex flex-col items-start gap-[8px] self-stretch">
             <p className="font-sans font-semibold text-[16px] leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
               {data.bankName} charged you
             </p>
-            <p className="font-sans font-bold text-[28px] leading-[32px] tracking-[-0.56px] text-black">
-              {tabContent.value}
-            </p>
-            <p className="font-sans font-normal text-[14px] leading-[16px] tracking-[-0.14px] text-[#0A1F44]">
-              {tabContent.description}
-            </p>
-          </div>
+            <div className="flex flex-col items-start gap-1">
+                <p className="font-sans font-bold text-[28px] leading-[32px] tracking-[-0.56px] text-black">
+                {tabContent.value}
+                </p>
+                <p className="font-sans font-normal text-[14px] leading-[16px] tracking-[-0.14px] text-[#0A1F44]">
+                {tabContent.description}
+                </p>
+            </div>
         </div>
 
-        <div className="w-[418px] flex flex-col items-start gap-3 self-stretch">
+        <div className="w-full flex flex-col items-start gap-3 self-stretch">
           <p className="font-sans font-medium text-[14px] leading-[20px] text-[#1F1F1F]">
             Information on FIRA
           </p>
@@ -334,12 +337,12 @@ export function ResultsCard({
             />
             <DetailRow label="Purpose code" value={data.purposeCode} />
             <DetailRow
-              label="USD Amount"
-              value={`${formatNumber(data.foreignCurrencyAmount, 'USD')}`}
+              label={`${data.foreignCurrencyCode} Amount`}
+              value={`${formatNumber(data.foreignCurrencyAmount, data.foreignCurrencyCode)}`}
             />
             <DetailRow
               label="User FX rate on FIRA"
-              value={`${formatNumber(data.bankRate, undefined, 2)} INR`}
+              value={`${formatNumber(data.bankRate, 'INR', 2)}`}
             />
             <DetailRow
               label="INR after FX"
@@ -350,7 +353,7 @@ export function ResultsCard({
 
         <hr className="w-full border-t border-[#F0F0F0]" />
 
-        <div className="w-[418px] flex flex-col items-start gap-3 self-stretch">
+        <div className="w-full flex flex-col items-start gap-3 self-stretch">
           <p className="font-sans font-medium text-[14px] leading-[20px] text-[#1F1F1F]">
             Calculations
           </p>
@@ -360,13 +363,13 @@ export function ResultsCard({
                 new Date(data.transactionDate),
                 'MMM dd, yyyy'
               )}`}
-              value={`${formatNumber(data.midMarketRate, undefined, 2)} INR`}
+              value={`${formatNumber(data.midMarketRate, 'INR', 2)}`}
             />
             <DetailRow
               label="Effective FX spread in INR"
               value={
                 <span className="flex items-center gap-1.5">
-                  {`${formatNumber(data.spread, undefined, 2)}`}
+                  {`${formatNumber(data.spread, 'INR', 2)}`}
                   <Tooltip delayDuration={100}>
                     <TooltipTrigger asChild>
                       <button
@@ -385,9 +388,9 @@ export function ResultsCard({
             />
           </div>
         </div>
-
+        
         {activeTab === 'totalCost' && (
-          <div className="w-[418px] h-[69px] bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
+          <div className="w-full bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
             <span className="font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
               Effective Total Cost
             </span>
@@ -411,7 +414,7 @@ export function ResultsCard({
         )}
 
         {activeTab === 'paise' && (
-          <div className="w-[418px] h-[69px] bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
+          <div className="w-full bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
             <span className="font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
               Effective FX spread in INR
             </span>
@@ -435,12 +438,12 @@ export function ResultsCard({
         )}
 
         {activeTab === 'bps' && (
-          <div className="w-[418px] h-[69px] bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
+          <div className="w-full bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
             <span className="font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
               Eff. FX spread in bps
             </span>
             <span className="flex items-center gap-1.5 font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
-              {formatNumber(data.basisPoints, 5)} bps
+              {formatNumber(data.basisPoints, undefined, 5)} bps
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
                   <button
@@ -458,7 +461,7 @@ export function ResultsCard({
           </div>
         )}
 
-        <div className="w-[418px] flex flex-col items-start gap-3 self-stretch">
+        <div className="w-full flex flex-col items-start gap-3 self-stretch">
           <p className="font-sans font-medium text-base leading-[18px] tracking-[-0.16px] text-[#1F1F1F]">
             Need better pricing that is simple & transparent?
           </p>
@@ -504,7 +507,7 @@ function DetailRow({
   value: string | React.ReactNode;
 }) {
   return (
-    <div className="flex justify-between items-center py-1 gap-1 w-[418px] h-7">
+    <div className="flex justify-between items-center py-1 gap-1 w-full h-7">
       <p className="font-sans font-normal text-sm leading-5 text-[#6A7280]">
         {label}
       </p>

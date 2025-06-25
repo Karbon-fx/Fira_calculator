@@ -23,9 +23,11 @@ const ExtractFiraDataOutputSchema = z.object({
   bankName: z.string().describe('The name of the bank that issued the FIRA.'),
   transactionDate: z.string().describe('The date of the transaction (YYYY-MM-DD).'),
   purposeCode: z.string().describe('The purpose code of the transaction.'),
+  foreignCurrencyCode: z.string().describe('The 3-letter ISO currency code of the foreign currency (e.g., USD, EUR).'),
   foreignCurrencyAmount: z.number().describe('The amount in foreign currency.'),
   bankFxRate: z.number().describe('The bank FX rate on the FIRA.'),
   inrCredited: z.number().describe('The amount credited in INR.'),
+  error: z.string().optional().describe('An error message if extraction fails for any reason.')
 });
 export type ExtractFiraDataOutput = z.infer<typeof ExtractFiraDataOutputSchema>;
 
@@ -38,49 +40,54 @@ const extractFiraDataPrompt = ai.definePrompt({
   input: { schema: ExtractFiraDataInputSchema },
   output: { schema: ExtractFiraDataOutputSchema },
   prompt: `
-You are an expert financial-document parser specialized in Foreign Inward Remittance Advice (FIRA) from banks worldwide.
+You are a world-class financial document analysis AI, specializing in Foreign Inward Remittance Advice (FIRA) documents from any bank, in any format (PDF, PNG, JPEG). Your task is to extract key financial data with extreme precision.
 
-User Stories:
-1. As a finance manager, I need the parser to identify my bank’s name so I can trust the source.
-2. As an accounting clerk, I want the exact transaction date in YYYY-MM-DD format for ledger entry.
-3. As a compliance officer, I need the purpose code to audit tax reporting.
-4. As a treasurer, I require the foreign currency code and amount so I can reconcile multi-currency receipts.
-5. As a CFO, I must see the bank’s FX rate and the final INR credited to verify hidden costs.
+**Core Objective:** Extract the following fields from the provided FIRA document.
 
-Your Tasks:
-1. Detect any 3-letter currency code (e.g., USD, EUR, GBP, AUD, JPY…) and extract:
-   - \`foreignCurrencyAmount\` (numeric, strip commas/symbols)
-   - \`bankFxRate\` (the “Rate” on the FIRA for that currency → INR)
-   - \`inrCredited\` (the “INR Amount” credited)
+**Field Extraction Rules & Synonyms:**
 
-2. Extract and validate these required fields:
-   - \`bankName\`
-   - \`transactionDate\` → output as “YYYY-MM-DD”
-   - \`purposeCode\` → typically “Pxxxx”
-   - \`foreignCurrencyAmount\` → must be > 0
-   - \`bankFxRate\` → must be > 0
-   - \`inrCredited\` → must be > 0
-   If any field is missing or invalid, set it to an empty string or zero and include an \`"error"\` key in your JSON.
+1.  **\`bankName\`**:
+    *   Look for the bank's logo or name at the top of the document.
+    *   Common Banks: HDFC Bank, ICICI Bank, DBS, Citibank, etc.
 
-3. Do **not** assume USD—use whichever currency you detect.
+2.  **\`transactionDate\`**:
+    *   Find the "Transaction Date," "Remittance Date," or "Value Date."
+    *   CRITICALLY IMPORTANT: Output the date in **YYYY-MM-DD format**.
+    *   Handle various date formats (e.g., "DD/MM/YYYY", "MM/DD/YYYY", "DD-Mon-YYYY"). If a date is ambiguous (e.g., 01/02/2023), assume DD/MM/YYYY format common in India.
 
-4. Output **only** this JSON shape (no extra commentary):
-\`\`\`json
-{
-  "bankName":        string,
-  "transactionDate": string,
-  "purposeCode":     string,
-  "foreignCurrencyAmount": number,
-  "bankFxRate":      number,
-  "inrCredited":     number
-}
-\`\`\`
+3.  **\`purposeCode\`**:
+    *   Look for "Purpose Code," "RBI Purpose Code," or "Remittance Purpose."
+    *   It is typically a 'P' followed by numbers (e.g., P0101, P1099).
+
+4.  **\`foreignCurrencyCode\`**:
+    *   Identify the 3-letter ISO currency code for the foreign currency amount.
+    *   Examples: USD, EUR, GBP, AUD, SGD, JPY. This is **NOT** INR.
+
+5.  **\`foreignCurrencyAmount\`**:
+    *   This is the amount in the foreign currency (identified in \`foreignCurrencyCode\`).
+    *   Look for labels like "Foreign Amount," "Amount in FCY," or the currency code itself (e.g., "USD Amount").
+    *   Strip all commas and currency symbols. It must be a number.
+
+6.  **\`bankFxRate\`**:
+    *   Find the "Exchange Rate," "FX Rate," "Rate," or "Conversion Rate" applied by the bank.
+    *   This is the rate used to convert the foreign currency to INR.
+
+7.  **\`inrCredited\`**:
+    *   Find the final credited amount in INR.
+    *   Look for "Amount in INR," "INR Equivalent," or "Net Amount Credited."
+    *   Strip all commas and currency symbols. It must be a number.
+
+**Validation and Error Handling:**
+
+*   If you cannot reliably find a **required** value (\`transactionDate\`, \`foreignCurrencyCode\`, \`foreignCurrencyAmount\`, \`inrCredited\`), you MUST set the \`error\` field in your output with a descriptive message (e.g., "Could not determine the transaction date.").
+*   For other non-critical fields (\`bankName\`, \`purposeCode\`, \`bankFxRate\`), if they are not found, return an empty string "" for strings or 0 for numbers. Do not set the error field for these.
+
+**Output Format:**
+
+*   You **MUST** output **ONLY** a single, valid JSON object that conforms to the specified schema. Do not add any extra text, commentary, or markdown formatting like \`\`\`json.
 
 Here is the FIRA document:
-
-\`\`\`
 {{media url=firaDataUri}}
-\`\`\`
 
 Begin extraction now.
 `
