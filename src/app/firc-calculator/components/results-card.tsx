@@ -75,16 +75,16 @@ function TooltipRow({ label, value }: { label: string; value: React.ReactNode })
 }
 
 function SpreadTooltipContent({ data }: { data: FircResult }) {
-  const transactionDate = format(new Date(data.transactionDate), 'dd/M/yyyy');
-  return (
-    <div className="flex flex-col items-start p-3 bg-[#0A1F44] rounded-lg w-[350px] gap-2">
-      <TooltipRow label={`MMR on ${transactionDate}`} value={`${formatNumber(data.midMarketRate, undefined, 2)} INR`} />
-      <TooltipRow label="User FX rate" value={`(-)${formatNumber(data.effectiveBankRate, undefined, 2)}`} />
-      <div className="w-full border-b border-white/20 my-1"></div>
-      <TooltipRow label="Effective FX spread in INR" value={`${formatNumber(data.spread, undefined, 6)} INR`} />
-    </div>
-  );
-}
+    const transactionDate = format(new Date(data.transactionDate), 'dd/M/yyyy');
+    return (
+      <div className="flex flex-col items-start p-3 bg-[#0A1F44] rounded-lg w-[350px] gap-2">
+        <TooltipRow label={`MMR on ${transactionDate}`} value={`${formatNumber(data.midMarketRate, undefined, 2)} INR`} />
+        <TooltipRow label="User FX rate" value={`(-)${formatNumber(data.effectiveBankRate, undefined, 2)}`} />
+        <div className="w-full border-b border-white/20 my-1"></div>
+        <TooltipRow label="Effective FX spread in INR" value={`${formatNumber(data.spread, undefined, 6)} INR`} />
+      </div>
+    );
+  }
 
 function TotalCostTooltipContent({ data }: { data: FircResult }) {
   return (
@@ -147,7 +147,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
   return (
     <TooltipProvider>
       {/* Frame 1000005238 */}
-      <div className="w-[450px] h-[765.6px] bg-white border border-[#F0F0F0] rounded-[16px] flex flex-col items-start p-[24px_16px] gap-4">
+      <div className="w-[450px] h-auto bg-white border border-[#F0F0F0] rounded-[16px] flex flex-col items-start p-[24px_16px] gap-4">
 
         {/* Frame 1272637979 -> Tabs */}
         <div role="tablist" aria-label="Cost analysis tabs" className="w-[418px] h-10 p-1 bg-[#F1F5F9] rounded-[6px] flex flex-row items-center self-stretch gap-1">
@@ -161,7 +161,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
               onClick={() => setActiveTab(tab.id)}
               className={cn(
                 'flex-1 flex flex-row justify-center items-center py-[6px] px-3 gap-2.5 h-8 rounded-[4px] font-sans font-medium text-sm leading-5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
-                activeTab === tab.id ? 'bg-white text-[#0A1F44]' : 'bg-transparent text-[#6A7280] hover:bg-white/50'
+                activeTab === tab.id ? 'bg-white text-[#0A1F44] shadow-sm' : 'bg-transparent text-[#6A7280] hover:bg-white/50'
               )}
             >
               {tab.label}
@@ -170,7 +170,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
         </div>
 
         {/* Frame 1000004943 - Bank Charge Header */}
-        <div id={`tabpanel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`} className="w-[418px] h-[118px] border-[1.84091px] border-[#EEF3F7] rounded-[12px] flex flex-row justify-between items-center p-[16px_12px] gap-[11.05px] self-stretch">
+        <div id={`tabpanel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`} className="w-[418px] h-auto border-[1.84091px] border-[#EEF3F7] rounded-[12px] flex flex-row justify-between items-center p-[16px_12px] gap-[11.05px] self-stretch">
           <div className="flex flex-col items-start gap-2 flex-1">
             <div className="flex flex-row items-center gap-2 self-stretch">
               <p className="font-sans font-semibold text-base leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
@@ -228,7 +228,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
         </div>
 
         {/* Frame 1000004943 - Effective Total Cost Panel */}
-        <div className="w-[418px] h-[68.8px] bg-[#F5F8FF] rounded-[12px] p-[24px_16px] flex flex-row justify-between items-center self-stretch">
+        <div className="w-[418px] h-auto bg-[#F5F8FF] rounded-[12px] p-[24px_16px] flex flex-row justify-between items-center self-stretch">
           <span className="font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">Effective Total Cost</span>
           <span className="flex items-center gap-1.5 font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
             {formatNumber(data.hiddenCost, 'INR')}
@@ -254,11 +254,14 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
             Get in Touch
           </Button>
           <div className="w-full flex justify-between items-center">
-            <button onClick={handleCopy} className="flex items-center gap-1.5 text-[#145AFF] font-sans font-normal text-sm leading-5">
+            <button onClick={handleCopy} className="group flex items-center gap-1.5 text-[#145AFF] font-sans font-normal text-sm leading-5">
               <CopyIcon />
-              <span>Copy Result</span>
+              <span className="relative py-1">
+                Copy Result
+                <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#145AFF] transition-all duration-300 group-hover:w-full"></span>
+              </span>
             </button>
-            <Button variant="ghost" className="flex items-center gap-1.5 text-[#145AFF] font-sans font-normal text-sm leading-5" onClick={onUploadAnother}>
+            <Button variant="ghost" className="flex items-center gap-1.5 text-[#145AFF] font-sans font-normal text-sm leading-5 hover:bg-transparent" onClick={onUploadAnother}>
               <UploadAnotherIcon />
               Upload Another FIRA
             </Button>
