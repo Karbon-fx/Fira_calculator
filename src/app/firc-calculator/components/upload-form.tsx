@@ -1,32 +1,14 @@
 'use client';
 
-import { useState, useRef, DragEvent } from 'react';
-import { useFormStatus } from 'react-dom';
+import { useState, useRef, DragEvent, useTransition, useEffect } from 'react';
+import { useActionState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { XCircle } from 'lucide-react';
-
-// Figma: Receipt Icon Stack
-const ReceiptIcon = ({ className }: { className?: string }) => (
-    <div className={cn("relative w-[85.07px] h-[119.5px] drop-shadow-[0_0_5.975px_rgba(0,0,0,0.25)]", className)}>
-        <svg width="86" height="120" viewBox="0 0 86 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute top-0 left-0">
-            <path d="M1.37503 1.00003L1.375 112.525C1.375 112.525 2.5 118.5 8.025 118.5C13.55 118.5 14.9 112.525 14.9 112.525L14.825 1.00003L1.37503 1.00003Z" fill="white" stroke="#0657D0" strokeOpacity="0.1" strokeWidth="1.75"/>
-            <path d="M84.5703 1L84.5703 112.425C84.5703 112.425 83.4453 118.425 77.9203 118.425C72.3953 118.425 71.0453 112.425 71.0453 112.425L71.1203 1L84.5703 1Z" fill="white" stroke="#0657D0" strokeOpacity="0.1" strokeWidth="1.75"/>
-            <path d="M71.1203 1H14.825L14.9 112.525C14.9 112.525 16.025 118.5 21.55 118.5C27.075 118.5 28.425 112.525 28.425 112.525L28.35 1H43.425L43.35 112.525C43.35 112.525 44.475 118.5 50 118.5C55.525 118.5 56.875 112.525 56.875 112.525L56.8 1H71.1203Z" fill="white" stroke="#0657D0" strokeOpacity="0.1" strokeWidth="1.75"/>
-            <path d="M28.35 41.525H56.8V48.525H28.35V41.525Z" fill="#0657D0" fillOpacity="0.2"/>
-            <path d="M28.35 59.425H56.8V66.425H28.35V59.425Z" fill="#0657D0" fillOpacity="0.2"/>
-            <path d="M28.35 77.325H47.15V84.325H28.35V77.325Z" fill="#0657D0" fillOpacity="0.2"/>
-        </svg>
-        <div className="absolute bottom-0 right-0 w-[59.75px] h-[59.75px] bg-[#0657D0] rounded-full flex items-center justify-center">
-            <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M17.4363 12.0117L13.4393 8.01465L9.44238 12.0117" stroke="white" strokeWidth="1.74271" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M13.4395 8.01465V18.9818" stroke="white" strokeWidth="1.74271" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M22.4828 14.896V22.4823C22.4828 22.9554 22.2961 23.4093 21.9671 23.7383C21.6381 24.0673 21.1842 24.2539 20.7111 24.2539H6.16788C5.69482 24.2539 5.24089 24.0673 4.91189 23.7383C4.58289 23.4093 4.39624 22.9554 4.39624 22.4823V14.896" stroke="white" strokeWidth="1.74271" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-        </div>
-    </div>
-);
+import { processFiraDocument } from '../actions';
+import type { FircResult } from '../actions';
+import { LoadingOverlay } from './loading-overlay';
 
 // Figma: Upload Icon for Dropzone
 const UploadIcon = ({ className }: { className?: string }) => (
@@ -49,30 +31,40 @@ const InfoIcon = ({ className }: { className?: string }) => (
 );
 
 
-function SubmitButton({ hasFile }: { hasFile: boolean }) {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" disabled={pending || !hasFile} className="w-full">
-      {pending ? 'Analyzing...' : 'Analyze FIRA'}
-    </Button>
-  );
-}
+const initialState: { data: FircResult | null; error: string | null; } = {
+  data: null,
+  error: null,
+};
 
-export function UploadForm({ error }: { error: string | null }) {
+export function UploadForm({ onComplete }: { onComplete: (data: FircResult) => void }) {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (selectedFile: File | null) => {
-    if (selectedFile) {
+  const [formState, formAction] = useActionState(processFiraDocument, initialState);
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (formState.data && !isPending) {
+      onComplete(formState.data);
+    }
+  }, [formState, onComplete, isPending]);
+  
+  const handleFileSelect = (selectedFile: File | null) => {
+    if (selectedFile && !isPending) {
       setFile(selectedFile);
+      const formData = new FormData();
+      formData.append('firaDocument', selectedFile);
+      startTransition(() => {
+        formAction(formData);
+      });
     }
   };
 
   const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(true);
+    if (!isPending) setIsDragging(true);
   };
 
   const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
@@ -91,96 +83,90 @@ export function UploadForm({ error }: { error: string | null }) {
     e.stopPropagation();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFileChange(e.dataTransfer.files[0]);
+      handleFileSelect(e.dataTransfer.files[0]);
       e.dataTransfer.clearData();
     }
   };
   
   return (
-    // Figma Frame: 1000005238 - Main Container
-    <div className="w-[450px] bg-white border border-[#F0F0F0] rounded-[16px] py-[48px] px-[32px] flex flex-col items-center gap-6">
-      
-      {error && (
-        <div className="w-full">
-          <Alert variant="destructive">
-            <XCircle className="h-4 w-4" />
-            <AlertTitle>Analysis Failed</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        </div>
-      )}
-
-      <ReceiptIcon />
-
-      <div className="w-[386px]">
-        <h1 className="font-sans text-[16px] leading-[18px] font-medium text-center text-[#0A1F44]">
-          Upload your FIRA (Foreign Inward Remittance Advice) to get a detailed breakdown of your actual costs.
-        </h1>
-      </div>
-
-      {/* Figma Frame: 1000005240 - Drag-and-Drop Zone */}
-      <div
-        className={cn(
-          "w-[386px] h-[240px] flex flex-col items-center justify-center gap-4 bg-[#F5F8FF] border border-dashed border-[#145AFF] rounded-[8px] cursor-pointer transition-colors duration-200",
-          isDragging && "bg-[#E9F2FB]"
+    <>
+      {isPending && <LoadingOverlay />}
+      <div className="w-[450px] bg-white border border-[#F0F0F0] rounded-[16px] py-[48px] px-[32px] flex flex-col items-center gap-6">
+        
+        {formState.error && !isPending && (
+          <div className="w-full">
+            <Alert variant="destructive">
+              <XCircle className="h-4 w-4" />
+              <AlertTitle>Analysis Failed</AlertTitle>
+              <AlertDescription>{formState.error}</AlertDescription>
+            </Alert>
+          </div>
         )}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-        role="button"
-        aria-label="Upload FIRA document"
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          name="firaDocument"
-          className="hidden"
-          accept=".pdf,.png,.jpg,.jpeg"
-          onChange={(e) => handleFileChange(e.target.files ? e.target.files[0] : null)}
-          required
-        />
-        <UploadIcon />
-        <div className="text-center">
-          <p className="font-sans text-[16px] leading-[18px] font-normal text-[#0A1F44]">
-            {file ? file.name : 'Click or drag file to this area to upload'}
-          </p>
-          <p className="font-sans text-[14px] leading-[16px] font-normal text-[#6A7280]">
-             {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : 'We accept files under 10MB in PDF, PNG, or JPEG format.'}
+
+        <div className="w-[386px]">
+          <h1 className="font-sans text-[16px] leading-[18px] font-medium text-center text-[#0A1F44]">
+            Upload your FIRA (Foreign Inward Remittance Advice) to get a detailed breakdown of your actual costs.
+          </h1>
+        </div>
+
+        {/* Figma Frame: 1000005240 - Drag-and-Drop Zone */}
+        <div
+          className={cn(
+            "w-[386px] h-[240px] flex flex-col items-center justify-center gap-4 bg-[#F5F8FF] border border-dashed border-[#145AFF] rounded-[8px] transition-colors duration-200",
+            isDragging && "bg-[#E9F2FB]",
+            isPending ? "cursor-not-allowed opacity-70" : "cursor-pointer",
+          )}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          onClick={() => !isPending && fileInputRef.current?.click()}
+          role="button"
+          aria-label="Upload FIRA document"
+          aria-disabled={isPending}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            name="firaDocument"
+            className="hidden"
+            accept=".pdf,.png,.jpg,.jpeg"
+            onChange={(e) => handleFileSelect(e.target.files ? e.target.files[0] : null)}
+            disabled={isPending}
+          />
+          <UploadIcon />
+          <div className="text-center">
+            <p className="font-sans text-[16px] leading-[18px] font-normal text-[#0A1F44]">
+              {file ? file.name : 'Click or drag file to this area to upload'}
+            </p>
+            <p className="font-sans text-[14px] leading-[16px] font-normal text-[#6A7280]">
+              {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : 'We accept files under 10MB in PDF, PNG, or JPEG format.'}
+            </p>
+          </div>
+          {file && !isPending && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive z-10 font-sans text-[14px]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFile(null);
+                  if (fileInputRef.current) fileInputRef.current.value = '';
+                }}
+              >
+                Remove file
+              </Button>
+          )}
+        </div>
+        
+        {/* Figma Frame: 1000005132 - Privacy Disclaimer */}
+        <div className="w-[386px] flex items-start gap-1.5 p-[16px_12px] bg-[#F5F8FF] border border-[#DDE4ED] rounded-[12px]">
+          <InfoIcon />
+          <p className="font-sans text-[12px] leading-[16px] font-normal text-[#000000]">
+            By uploading, you agree to our use of the document to provide a cost breakdown and contact you about savings. Please redact sensitive details like bank account numbers before submission.
           </p>
         </div>
-        {file && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive z-10 font-sans text-[14px]"
-              onClick={(e) => {
-                e.stopPropagation();
-                setFile(null);
-                if (fileInputRef.current) fileInputRef.current.value = '';
-              }}
-            >
-              Remove file
-            </Button>
-        )}
       </div>
-      
-      {/* Figma Frame: 1000005132 - Privacy Disclaimer */}
-      <div className="w-[386px] flex items-start gap-1.5 p-[16px_12px] bg-[#F5F8FF] border border-[#DDE4ED] rounded-[12px]">
-        <InfoIcon />
-        <p className="font-sans text-[12px] leading-[16px] font-normal text-[#000000]">
-          By uploading, you agree to our use of the document to provide a cost breakdown and contact you about savings. Please redact sensitive details like bank account numbers before submission.
-        </p>
-      </div>
-
-      <div className="w-full">
-        <SubmitButton hasFile={!!file} />
-      </div>
-
-       <footer className="text-center text-xs text-[#1F1F1F] mt-2 font-sans">
-          Powered by Karbon & Google Gemini.
-        </footer>
-    </div>
+    </>
   );
 }
