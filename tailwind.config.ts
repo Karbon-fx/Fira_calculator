@@ -10,9 +10,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', 'sans-serif'],
-        body: ['var(--font-inter)', 'sans-serif'],
-        headline: ['var(--font-inter)', 'sans-serif'],
+        sans: ['"Mona Sans"', 'sans-serif'],
+        body: ['"Mona Sans"', 'sans-serif'],
+        headline: ['"Mona Sans"', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

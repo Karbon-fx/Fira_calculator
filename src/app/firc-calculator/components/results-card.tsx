@@ -1,55 +1,31 @@
 'use client';
 /**
- * @fileoverview ResultsCard component displays the FIRA analysis results.
+ * @fileoverview ResultsCard component displays the FIRA analysis results based on Figma spec.
  * @prop {FircResult} data - The calculated data from the FIRA document.
  * @prop {() => void} onUploadAnother - Handler to reset the form and upload a new file.
  * @prop {() => void} onContactClick - Handler for the "Get in Touch" button.
- * @prop {() => void} onCopyLink - Handler for the "Copy Links" button.
  */
 import { useState } from 'react';
 import type { FircResult } from '../actions';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { Copy, Upload } from 'lucide-react';
 
 interface ResultsCardProps {
   data: FircResult;
   onUploadAnother: () => void;
   onContactClick: () => void;
-  onCopyLink: () => void;
 }
 
+// Figma Frame: Part of 1000004943 - Bank Icon
 const BankIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="shrink-0"
-  >
-    <path
-      d="M12 2L2 12L12 22L22 12L12 2Z"
-      fill="hsl(var(--destructive))"
-    />
-    <path
-      d="M15 9L9 15"
-      stroke="hsl(var(--destructive-foreground))"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M9 9L15 15"
-      stroke="hsl(var(--destructive-foreground))"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 21C11 21 19 14.2 19 8.5C19 4.36 15.42 1 11 1C6.58 1 3 4.36 3 8.5C3 14.2 11 21 11 21Z" stroke="#0A1F44" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M14 8.5C14 10.16 12.66 11.5 11 11.5C9.34 11.5 8 10.16 8 8.5C8 6.84 9.34 5.5 11 5.5C12.66 5.5 14 6.84 14 8.5Z" stroke="#0A1F44" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
 );
 
+// Figma Frame: Part of 1000005243 - Info Icon
 const InfoIcon = ({ className }: { className?: string }) => (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
         <path d="M8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -58,54 +34,54 @@ const InfoIcon = ({ className }: { className?: string }) => (
     </svg>
 );
 
+// Icon for Upload Another FIRA button
+const UploadIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 4L8 2L6 4" stroke="#145AFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8 2V10" stroke="#145AFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M14 7V13C14 13.5523 13.5523 14 13 14H3C2.44772 14 2 13.5523 2 13V7" stroke="#145AFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
 
-const formatValue = (value: number, type: 'currency' | 'number', digits = 2) => {
-    const options: Intl.NumberFormatOptions = {
-        minimumFractionDigits: digits,
-        maximumFractionDigits: digits,
-    };
-    if (type === 'currency') {
-        options.style = 'currency';
-        options.currency = 'INR';
-    }
-    return new Intl.NumberFormat('en-IN', options).format(value);
-}
+const formatNumber = (value: number, currency?: 'INR', decimals = 2) => {
+    const formatted = new Intl.NumberFormat('en-IN', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+    }).format(value);
+    return currency ? `${formatted} ${currency}` : formatted;
+};
 
-export function ResultsCard({ data, onUploadAnother, onContactClick, onCopyLink }: ResultsCardProps) {
+export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCardProps) {
   const [activeTab, setActiveTab] = useState('totalCost');
+
   const tabs = [
     { id: 'totalCost', label: 'Total Cost' },
-    { id: 'paise', label: 'Paise' },
-    { id: 'bps', label: 'Basis Points(bps)' },
+    { id: 'paise', label: 'Paise per Unit' },
+    { id: 'bps', label: 'Basis Points (bps)' },
   ];
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-        case 'totalCost':
-            return {
-                value: formatValue(data.hiddenCost, 'currency'),
-                description: `on the mid-market rate of INR ${formatValue(data.midMarketRate, 'number', 2)}`
-            };
-        case 'paise':
-            return {
-                value: formatValue(data.paisePerUnit, 'number'),
-                description: 'Paise lost per foreign currency unit'
-            };
-        case 'bps':
-            return {
-                value: formatValue(data.basisPoints, 'number'),
-                description: 'Basis Points (bps) Markup'
-            };
-        default:
-            return { value: '', description: '' };
+  const tabContent = {
+    totalCost: {
+        value: formatNumber(data.hiddenCost, 'INR'),
+        description: `on the mid-market rate of INR ${formatNumber(data.midMarketRate)}`
+    },
+    paise: {
+        value: formatNumber(data.paisePerUnit) + ' Paise',
+        description: 'Paise lost per foreign currency unit'
+    },
+    bps: {
+        value: formatNumber(data.basisPoints),
+        description: 'Basis Points (bps) Markup'
     }
-  };
+  }[activeTab as keyof typeof tabContent] || { value: '', description: '' };
 
-  const tabContent = renderTabContent();
 
   return (
-    <div className="w-full max-w-xl mx-auto bg-card rounded-2xl p-6 sm:p-8 shadow-card-shadow animate-in fade-in-50 slide-in-from-bottom-10 duration-500">
-      <div role="tablist" aria-label="Cost analysis tabs" className="bg-muted rounded-lg p-1 flex items-center mb-6">
+    // Figma Frame: 1000005259 - Main Container
+    <div className="w-[450px] bg-white border border-[#F0F0F0] rounded-[16px] p-[24px_16px] flex flex-col gap-[16px] animate-in fade-in-50 slide-in-from-bottom-10 duration-500">
+      
+      {/* Figma Frame: 1272637978 - Tabs */}
+      <div role="tablist" aria-label="Cost analysis tabs" className="flex flex-row items-start p-1 gap-4 w-[418px] h-[40px] bg-[#F1F5F9] rounded-[6px] self-stretch">
         {tabs.map(tab => (
           <button
             key={tab.id}
@@ -115,11 +91,10 @@ export function ResultsCard({ data, onUploadAnother, onContactClick, onCopyLink 
             aria-controls={`tabpanel-${tab.id}`}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              'flex-1 text-center font-semibold text-base py-2 px-4 rounded-md transition-all outline-none',
-              'focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
+              'flex-1 flex items-center justify-center py-[6px] px-[12px] h-[32px] rounded-[4px] font-sans text-[14px] leading-[20px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#145AFF]',
               activeTab === tab.id
-                ? 'bg-white text-card-foreground shadow-sm'
-                : 'text-muted-foreground hover:bg-white/50'
+                ? 'bg-white text-[#0A1F44] shadow-sm'
+                : 'bg-transparent text-[#6A7280] hover:bg-white/50'
             )}
           >
             {tab.label}
@@ -127,85 +102,85 @@ export function ResultsCard({ data, onUploadAnother, onContactClick, onCopyLink 
         ))}
       </div>
       
-      <div id={`tabpanel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`}>
-        <div className="border rounded-lg p-4 text-center mb-6">
-            <div className="flex items-center justify-center gap-2 text-destructive text-sm font-semibold mb-1">
-                <BankIcon />
-                {data.bankName} charged you
-            </div>
-            <p className="text-4xl font-bold text-foreground">
-                {tabContent.value}
-            </p>
-            <p className="text-sm text-muted-foreground mt-1">
-                {tabContent.description}
-            </p>
+      {/* Figma Frame: 1000004943 - Bank Charge Header */}
+      <div id={`tabpanel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`} className="flex flex-col items-center p-[16px_12px] gap-[11.05px] w-[418px] border-[1.84091px] border-[#EEF3F7] rounded-[12px]">
+        <div className="flex items-center gap-2 font-sans text-[#0A1F44] text-[16px] leading-[18px] font-semibold">
+            <BankIcon />
+            {data.bankName} charged you
+        </div>
+        <p className="font-sans text-[28px] leading-[32px] font-bold text-[#000000]">
+            {tabContent.value}
+        </p>
+        <p className="font-sans text-[14px] leading-[16px] text-[#0A1F44]">
+            {tabContent.description}
+        </p>
+      </div>
+
+      {/* Figma Frame: 1000005242 & 1000005243 - Analysis Breakdown */}
+      <div className="flex flex-col w-[418px] gap-[12px]">
+        {/* Information on FIRA */}
+        <div className='flex flex-col gap-2'>
+            <h3 className="font-sans text-[16px] font-semibold text-[#1F1F1F]">Information on FIRA</h3>
+            <DetailRow label="Date of transaction" value={format(new Date(data.transactionDate), 'MMM dd, yyyy')} />
+            <DetailRow label="Purpose code" value={data.purposeCode} />
+            <DetailRow label="USD Amount" value={`${formatNumber(data.foreignCurrencyAmount)} USD`} />
+            <DetailRow label="User FX rate on FIRA" value={`${formatNumber(data.bankRate)} INR`} />
+            <DetailRow label="INR after FX" value={formatNumber(data.inrCredited, 'INR')} />
+        </div>
+
+        <hr className="border-t border-[#F0F0F0]" />
+
+        {/* Calculations */}
+        <div className='flex flex-col gap-2'>
+            <h3 className="font-sans text-[16px] font-semibold text-[#1F1F1F]">Calculations</h3>
+            <DetailRow label={`Mid-market Rate on ${format(new Date(data.transactionDate), 'MMM dd, yyyy')}`} value={`${formatNumber(data.midMarketRate)} INR`} />
+            <DetailRow 
+                label="Effective FX spread in INR" 
+                value={
+                    <span className="flex items-center gap-1.5">
+                        {`${formatNumber(data.spread)} INR`}
+                        <InfoIcon className="text-gray-400" />
+                    </span>
+                } 
+            />
+        </div>
+
+        {/* Effective Total Cost Panel */}
+        <div className="bg-[#F5F8FF] rounded-[12px] p-[24px_16px] flex justify-between items-center w-[418px] h-[68.8px]">
+            <span className="font-sans text-[16px] leading-[18px] font-medium text-black">Effective Total Cost</span>
+            <span className="flex items-center gap-2 font-sans text-[16px] leading-[18px] font-medium text-black">
+                {formatNumber(data.hiddenCost, 'INR')}
+                <InfoIcon className="text-gray-400" />
+            </span>
         </div>
       </div>
 
-      <div className="bg-[#F9FAFB] rounded-lg p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-            <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Information on FIRA</h3>
-                <div className="space-y-4 text-sm">
-                    <DetailRow label="Date of transaction" value={format(new Date(data.transactionDate), 'MMM dd, yyyy')} />
-                    <DetailRow label="Purpose code" value={data.purposeCode} />
-                    <DetailRow label="USD Amount" value={`${formatValue(data.foreignCurrencyAmount, 'number')} USD`} />
-                    <DetailRow label="User FX rate on FIRA" value={`${formatValue(data.bankRate, 'number')} INR`} />
-                    <DetailRow label="INR after FX" value={`${formatValue(data.inrCredited, 'currency', 2).replace('₹','')} INR`} />
-                </div>
-            </div>
-            <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Calculations</h3>
-                <div className="space-y-4 text-sm">
-                    <DetailRow label={`Mid-market Rate on ${format(new Date(data.transactionDate), 'MMM dd, yyyy')}`} value={`${formatValue(data.midMarketRate, 'number')} INR`} />
-                    <DetailRow 
-                        label="Effective FX spread in INR" 
-                        value={
-                            <span className="flex items-center gap-1.5">
-                                {`${formatValue(data.spread, 'number')} INR`}
-                                <InfoIcon className="text-muted-foreground" />
-                            </span>
-                        } 
-                    />
-                     <div className="bg-white border rounded-lg p-3 flex justify-between items-center font-medium mt-4">
-                        <p>Effective Total Cost</p>
-                        <p className="flex items-center gap-1.5">
-                            {formatValue(data.hiddenCost, 'currency')}
-                            <InfoIcon className="text-muted-foreground" />
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </div>
 
-      <div className="text-center mt-6">
-        <p className="font-semibold text-foreground mb-4">Need better pricing that is simple & transparent?</p>
-        <Button size="lg" className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90" onClick={onContactClick}>
+      {/* CTA Buttons & Footer */}
+      <div className="flex flex-col items-center gap-6 mt-2">
+        <p className="font-sans text-base font-semibold text-center text-[#0A1F44]">
+          Need better pricing that is simple & transparent?
+        </p>
+        <Button size="lg" className="w-full bg-[#145AFF] text-white font-semibold text-[14px] leading-[16px] rounded-[8px] py-[12px] px-[16px] h-auto hover:bg-[#145AFF]/90" onClick={onContactClick}>
             Get in Touch
         </Button>
-      </div>
-
-      <div className="flex items-center justify-center gap-6 mt-6">
-        <button onClick={onCopyLink} className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-            <Copy size={16}/> Copy Links
+        <button onClick={onUploadAnother} className="flex items-center gap-2 font-sans text-[14px] leading-[20px] text-[#145AFF] font-normal">
+            <UploadIcon />
+            Upload Another FIRA
         </button>
-        <button onClick={onUploadAnother} className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-            <Upload size={16} /> Upload Another FIRA
-        </button>
+        <footer className="text-center text-xs text-[#1F1F1F] mt-2 font-sans">
+          Powered by Karbon & Google Gemini.
+        </footer>
       </div>
-      <footer className="mt-6 text-center text-xs text-muted-foreground">
-          <p>Powered by Karbon & Google Gemini.</p>
-      </footer>
     </div>
   );
 }
 
 function DetailRow({ label, value }: { label: string; value: string | React.ReactNode }) {
     return (
-      <div className="flex justify-between items-center text-sm">
-        <p className="text-muted-foreground">{label}</p>
-        <p className="font-medium text-foreground text-right">{value}</p>
+      <div className="flex justify-between items-center py-1 gap-4 w-full h-[28px]">
+        <p className="font-sans text-[14px] leading-[20px] font-medium text-[#6A7280]">{label}</p>
+        <div className="font-sans text-[14px] leading-[20px] font-medium text-[#1F1F1F] text-right">{value}</div>
       </div>
     );
 }
