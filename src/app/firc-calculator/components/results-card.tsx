@@ -261,10 +261,13 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
                 <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#145AFF] transition-all duration-300 group-hover:w-full"></span>
               </span>
             </button>
-            <Button variant="ghost" className="flex items-center gap-1.5 text-[#145AFF] font-sans font-normal text-sm leading-5 hover:bg-transparent" onClick={onUploadAnother}>
+            <button className="group flex items-center gap-1.5 text-[#145AFF] font-sans font-normal text-sm leading-5" onClick={onUploadAnother}>
               <UploadAnotherIcon />
-              Upload Another FIRA
-            </Button>
+              <span className="relative py-1">
+                Upload Another FIRA
+                <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#145AFF] transition-all duration-300 group-hover:w-full"></span>
+              </span>
+            </button>
           </div>
         </div>
       </div>
