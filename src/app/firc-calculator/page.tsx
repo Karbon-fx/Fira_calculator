@@ -32,7 +32,9 @@ export default function FircCalculatorPage() {
               onContactClick={handleContactClick}
           />
         ) : (
-          <UploadForm onComplete={handleUploadComplete} />
+          <UploadForm
+            title={<b>Upload your FIRA (Foreign Inward Remittance Advice) to get a detailed breakdown of your actual costs.</b>}
+            onComplete={handleUploadComplete} />
         )}
       </main>
     </div>

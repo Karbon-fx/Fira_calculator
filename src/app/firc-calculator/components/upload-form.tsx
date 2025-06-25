@@ -104,7 +104,7 @@ export function UploadForm({ onComplete }: { onComplete: (data: FircResult) => v
         )}
 
         <div className="w-[386px]">
-          <h1 className="font-sans text-[16px] leading-[18px] font-medium text-center text-[#0A1F44]">
+          <h1 className="font-sans text-[16px] leading-[18px] font-bold text-center text-[#0A1F44]">
             Upload your FIRA (Foreign Inward Remittance Advice) to get a detailed breakdown of your actual costs.
           </h1>
         </div>
@@ -162,7 +162,7 @@ export function UploadForm({ onComplete }: { onComplete: (data: FircResult) => v
         {/* Figma Frame: 1000005132 - Privacy Disclaimer */}
         <div className="w-[386px] flex items-start gap-1.5 p-[16px_12px] bg-[#F5F8FF] border border-[#DDE4ED] rounded-[12px]">
           <InfoIcon />
-          <p className="font-sans text-[12px] leading-[16px] font-normal text-[#000000]">
+          <p className="font-sans text-[12px] leading-[16px] font-bold text-[#000000]">
             By uploading, you agree to our use of the document to provide a cost breakdown and contact you about savings. Please redact sensitive details like bank account numbers before submission.
           </p>
         </div>
