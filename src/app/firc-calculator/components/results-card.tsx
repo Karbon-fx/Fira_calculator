@@ -259,7 +259,7 @@ export function ResultsCard({
       )}`,
     },
     paise: {
-      value: `${formatNumber(data.spread, 'INR')}`,
+      value: `${formatNumber(data.paisePerUnit, 'INR')}`,
       description: `on the mid-market rate of INR ${formatNumber(
         data.midMarketRate,
         undefined,
@@ -308,19 +308,17 @@ export function ResultsCard({
           id={`tabpanel-${activeTab}`}
           role="tabpanel"
           aria-labelledby={`tab-${activeTab}`}
-          className="w-[418px] h-[118px] border-[1.84px] border-[#EEF3F7] rounded-[12px] flex flex-col justify-center items-start p-[16px_12px] gap-2 self-stretch"
+          className="w-[418px] h-[118px] border-[1.84px] border-[#EEF3F7] rounded-[12px] flex flex-col items-start justify-center p-[16px_12px] gap-[8px] self-stretch"
         >
-          <div className="flex items-center gap-2">
-            <p className="font-sans font-semibold text-base leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
+            <p className="font-sans font-semibold text-[16px] leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
               {data.bankName} charged you
             </p>
-          </div>
-          <p className="font-sans font-bold text-[28px] leading-8 tracking-[-0.56px] text-black pl-[30px]">
-            {tabContent.value}
-          </p>
-          <p className="font-sans font-normal text-sm leading-4 tracking-[-0.14px] text-[#0A1F44] self-stretch pl-[30px]">
-            {tabContent.description}
-          </p>
+            <p className="font-sans font-bold text-[28px] leading-[32px] tracking-[-0.56px] text-black">
+              {tabContent.value}
+            </p>
+            <p className="font-sans font-normal text-[14px] leading-[16px] tracking-[-0.14px] text-[#0A1F44]">
+              {tabContent.description}
+            </p>
         </div>
 
         <div className="w-[418px] flex flex-col items-start gap-3 self-stretch">
@@ -355,80 +353,35 @@ export function ResultsCard({
             Calculations
           </p>
           <div className="flex flex-col justify-center items-start gap-2 self-stretch w-full">
-            {activeTab === 'totalCost' && (
-              <>
-                <DetailRow
-                  label={`Mid-market Rate on ${format(
-                    new Date(data.transactionDate),
-                    'MMM dd, yyyy'
-                  )}`}
-                  value={`${formatNumber(data.midMarketRate, undefined, 2)} INR`}
-                />
-                <DetailRow
-                  label="Effective FX spread in INR"
-                  value={
-                    <span className="flex items-center gap-1.5">
-                      {`${formatNumber(data.spread, undefined, 2)}`}
-                      <Tooltip delayDuration={100}>
-                        <TooltipTrigger asChild>
-                          <button
-                            aria-label="More info about Effective FX spread"
-                            className="flex items-center justify-center"
-                          >
-                            <InfoIcon />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent className="bg-transparent border-none p-0 shadow-none">
-                          <SpreadTooltipContent data={data} />
-                        </TooltipContent>
-                      </Tooltip>
-                    </span>
-                  }
-                />
-              </>
-            )}
-
-            {activeTab === 'paise' && (
+            <DetailRow
+              label={`Mid-market Rate on ${format(
+                new Date(data.transactionDate),
+                'MMM dd, yyyy'
+              )}`}
+              value={`${formatNumber(data.midMarketRate, undefined, 2)} INR`}
+            />
+            {activeTab !== 'totalCost' && (
               <DetailRow
-                label={`Mid-market Rate on ${format(
-                  new Date(data.transactionDate),
-                  'MMM dd, yyyy'
-                )}`}
-                value={`${formatNumber(data.midMarketRate, undefined, 2)} INR`}
+                label="Effective FX spread in INR"
+                value={
+                  <span className="flex items-center gap-1.5">
+                    {`${formatNumber(data.spread, undefined, 2)}`}
+                    <Tooltip delayDuration={100}>
+                      <TooltipTrigger asChild>
+                        <button
+                          aria-label="More info about Effective FX spread"
+                          className="flex items-center justify-center"
+                        >
+                          <InfoIcon />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-transparent border-none p-0 shadow-none">
+                        <SpreadTooltipContent data={data} />
+                      </TooltipContent>
+                    </Tooltip>
+                  </span>
+                }
               />
-            )}
-
-            {activeTab === 'bps' && (
-              <>
-                <DetailRow
-                  label={`Mid-market Rate on ${format(
-                    new Date(data.transactionDate),
-                    'MMM dd, yyyy'
-                  )}`}
-                  value={`${formatNumber(data.midMarketRate, undefined, 2)} INR`}
-                />
-                <DetailRow
-                  label="Effective FX spread in INR"
-                  value={
-                    <span className="flex items-center gap-1.5">
-                      {`${formatNumber(data.spread, undefined, 2)} INR`}
-                      <Tooltip delayDuration={100}>
-                        <TooltipTrigger asChild>
-                          <button
-                            aria-label="More info about Effective FX spread"
-                            className="flex items-center justify-center"
-                          >
-                            <InfoIcon />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent className="bg-transparent border-none p-0 shadow-none">
-                          <SpreadTooltipContent data={data} />
-                        </TooltipContent>
-                      </Tooltip>
-                    </span>
-                  }
-                />
-              </>
             )}
           </div>
         </div>
