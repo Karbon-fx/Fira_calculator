@@ -25,6 +25,18 @@ export default function FircCalculatorPage() {
   const handleReset = () => {
     window.location.reload();
   };
+
+  const handleGetInTouch = () => {
+    // Placeholder for "Get in Touch" logic
+    alert('Get in Touch clicked!');
+  };
+
+  const handleCopyLink = () => {
+    // Placeholder for "Copy Link" logic
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      alert('Link copied to clipboard!');
+    });
+  };
   
   const [formKey, setFormKey] = useState(Date.now());
 
@@ -35,7 +47,7 @@ export default function FircCalculatorPage() {
   }, [formState.error]);
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center bg-background p-4 sm:p-6 md:p-8">
+    <div className="flex min-h-screen w-full flex-col items-center bg-[#E9F2FB] p-4 sm:p-6 md:p-8">
       {isPending && <LoadingOverlay />}
       <div className="w-full max-w-2xl py-8">
         <header className="mb-8 flex justify-center">
@@ -44,19 +56,18 @@ export default function FircCalculatorPage() {
         
         <main>
           {formState.data && !isPending ? (
-            <ResultsCard data={formState.data} onReset={handleReset} />
+            <ResultsCard 
+                data={formState.data} 
+                onReset={handleReset}
+                onGetInTouch={handleGetInTouch}
+                onCopyLink={handleCopyLink}
+            />
           ) : (
             <form action={handleFormAction} key={formKey}>
               <UploadForm error={formState.error} />
             </form>
           )}
         </main>
-
-        <footer className="mt-8 text-center text-sm text-muted-foreground">
-          <p>
-            Powered by Karbon & Google Gemini.
-          </p>
-        </footer>
       </div>
     </div>
   );

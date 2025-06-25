@@ -10,8 +10,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        sans: ['var(--font-inter)', 'sans-serif'],
+        body: ['var(--font-inter)', 'sans-serif'],
+        headline: ['var(--font-inter)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
@@ -67,9 +68,14 @@ export default {
         },
       },
       borderRadius: {
+        '2xl': '1rem',
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      boxShadow: {
+        'card-shadow': '0 4px 20px rgba(0, 0, 0, 0.05)',
+        'tab-shadow': '0px 1px 2px rgba(0, 0, 0, 0.05)',
       },
       keyframes: {
         'accordion-down': {

@@ -20,6 +20,7 @@ const ExtractFiraDataInputSchema = z.object({
 export type ExtractFiraDataInput = z.infer<typeof ExtractFiraDataInputSchema>;
 
 const ExtractFiraDataOutputSchema = z.object({
+  bankName: z.string().describe('The name of the bank that issued the FIRA.'),
   transactionDate: z.string().describe('The date of the transaction (YYYY-MM-DD).'),
   purposeCode: z.string().describe('The purpose code of the transaction.'),
   foreignCurrencyAmount: z.number().describe('The amount in foreign currency.'),
@@ -41,6 +42,7 @@ const extractFiraDataPrompt = ai.definePrompt({
 You will be provided with a Foreign Inward Remittance Advice (FIRA) document.
 Your task is to extract the following information from the document:
 
+- Bank Name
 - Date of transaction (YYYY-MM-DD)
 - Purpose code
 - Foreign currency amount

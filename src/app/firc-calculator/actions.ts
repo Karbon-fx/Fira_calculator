@@ -9,6 +9,7 @@ const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 const ACCEPTED_FILE_TYPES = ['application/pdf', 'image/png', 'image/jpeg'];
 
 export interface FircResult {
+  bankName: string;
   transactionDate: string;
   purposeCode: string;
   foreignCurrencyAmount: number;
@@ -85,6 +86,7 @@ export async function processFiraDocument(
     const basisPoints = (spread / D) * 10000;
 
     const result: FircResult = {
+        bankName: extractedData.bankName || 'Your Bank',
         transactionDate: extractedData.transactionDate,
         purposeCode: extractedData.purposeCode || 'N/A',
         foreignCurrencyAmount: A,
