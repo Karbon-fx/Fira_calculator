@@ -19,7 +19,12 @@ import {
 } from '@/components/ui/tooltip';
 
 // --- ICONS ---
-// Figma Frame: Vector (Info Icon)
+const BankIcon = () => (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11" cy="11" r="11" fill="#D9D9D9"/>
+    </svg>
+);
+
 const InfoIcon = () => (
   <svg width="17" height="21" viewBox="0 0 17 21" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M8.39999 15C12.266 15 15.4 11.866 15.4 8C15.4 4.13401 12.266 1 8.4 1C4.53401 1 1.40002 4.13401 1.40002 8C1.40002 11.866 4.53401 15 8.39999 15Z" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
@@ -28,7 +33,6 @@ const InfoIcon = () => (
   </svg>
 );
 
-// Figma Frame: Upload (Upload Icon)
 const UploadAnotherIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M8 12.6667V3.33333" stroke="#145AFF" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
@@ -36,7 +40,6 @@ const UploadAnotherIcon = () => (
   </svg>
 );
 
-// Figma Frame: Copy (Copy Icon)
 const CopyIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M11.3333 1.33331H4.66667C3.93028 1.33331 3.33333 1.93026 3.33333 2.66665V10.6666C3.33333 11.403 3.93028 12 4.66667 12H11.3333C12.0697 12 12.6667 11.403 12.6667 10.6666V2.66665C12.6667 1.93026 12.0697 1.33331 11.3333 1.33331Z" stroke="#145AFF" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
@@ -160,7 +163,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
               aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex-1 flex flex-row justify-center items-center py-[6px] px-3 gap-2.5 h-8 rounded-[4px] font-sans font-medium text-sm leading-5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
+                'flex-1 flex flex-row justify-center items-center py-[6px] px-3 h-8 rounded-[4px] font-sans font-medium text-sm leading-5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
                 activeTab === tab.id ? 'bg-white text-[#0A1F44] shadow-sm' : 'bg-transparent text-[#6A7280] hover:bg-white/50'
               )}
             >
@@ -170,9 +173,10 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
         </div>
 
         {/* Frame 1000004943 - Bank Charge Header */}
-        <div id={`tabpanel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`} className="w-[418px] h-auto border-[1.84091px] border-[#EEF3F7] rounded-[12px] flex flex-row justify-between items-center p-[16px_12px] gap-[11.05px] self-stretch">
+        <div id={`tabpanel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`} className="w-[418px] border-[2px] border-[#EEF3F7] rounded-[12px] flex flex-row justify-between items-center p-[16px_12px] gap-[11px] self-stretch">
           <div className="flex flex-col items-start gap-2 flex-1">
             <div className="flex flex-row items-center gap-2 self-stretch">
+              <BankIcon />
               <p className="font-sans font-semibold text-base leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
                 {data.bankName} charged you
               </p>
@@ -228,7 +232,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
         </div>
 
         {/* Frame 1000004943 - Effective Total Cost Panel */}
-        <div className="w-[418px] h-auto bg-[#F5F8FF] rounded-[12px] p-[24px_16px] flex flex-row justify-between items-center self-stretch">
+        <div className="w-[418px] bg-[#F5F8FF] rounded-[12px] p-[24px_16px] flex flex-row justify-between items-center self-stretch">
           <span className="font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">Effective Total Cost</span>
           <span className="flex items-center gap-1.5 font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
             {formatNumber(data.hiddenCost, 'INR')}
