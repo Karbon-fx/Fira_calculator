@@ -19,15 +19,6 @@ import {
 } from '@/components/ui/tooltip';
 
 // --- ICONS ---
-// Figma Frame: image 24091 (Bank Icon)
-const BankIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3" y="3" width="16" height="16" rx="4" fill="#FEE2E2" />
-    <path d="M14 8L8 14" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M8 8L14 14" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
 // Figma Frame: Vector (Info Icon)
 const InfoIcon = () => (
   <svg width="17" height="21" viewBox="0 0 17 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -182,7 +173,6 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
         <div id={`tabpanel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`} className="w-[418px] h-[118px] border-[1.84091px] border-[#EEF3F7] rounded-[12px] flex flex-row justify-between items-center p-[16px_12px] gap-[11.05px] self-stretch">
           <div className="flex flex-col items-start gap-2 flex-1">
             <div className="flex flex-row items-center gap-2 self-stretch">
-              <BankIcon />
               <p className="font-sans font-semibold text-base leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
                 {data.bankName} charged you
               </p>
