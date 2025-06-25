@@ -25,7 +25,7 @@ interface ResultsCardProps {
 
 // Figma Frame: Red Cross Icon
 const CrossIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="3" y="3" width="18" height="18" rx="4" fill="#FEE2E2"/>
         <path d="M15 9L9 15" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         <path d="M9 9L15 15" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -51,20 +51,21 @@ const UploadIcon = () => (
     </svg>
 );
 
-const CopyIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M11.3333 10H12.6666C13.5833 10 14 9.5833 14 8.66664V3.3333C14 2.41664 13.5833 2 12.6666 2H7.33327C6.41661 2 5.99994 2.41664 5.99994 3.3333V4.66664" stroke="#1F2937" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M10 14H3.33333C2.41667 14 2 13.5833 2 12.6667V6H7.33333C8.25 6 8.66667 6.41667 8.66667 7.33333V12.6667C8.66667 13.5833 8.25 14 7.33333 14" stroke="#1F2937" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-);
-
-
 const formatNumber = (value: number, currency?: 'INR' | 'USD', decimals = 2) => {
     const formatted = new Intl.NumberFormat('en-IN', {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
+    }).format(value);
+    const sign = value < 0 ? '-' : '';
+    const absFormatted = new Intl.NumberFormat('en-IN', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
     }).format(Math.abs(value));
-    return currency ? `${formatted} ${currency}` : formatted;
+
+    if (currency) {
+      return `${sign}${absFormatted} ${currency}`;
+    }
+    return `${sign}${absFormatted}`;
 };
 
 function TooltipRow({ label, value }: { label: string; value: React.ReactNode }) {
@@ -112,7 +113,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
 
   const tabContent = {
     totalCost: {
-        value: formatNumber(data.hiddenCost),
+        value: formatNumber(data.hiddenCost, 'INR'),
         description: `on the mid-market rate of INR ${formatNumber(data.midMarketRate)}`
     },
     paise: {
@@ -120,7 +121,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
         description: 'Paise lost per foreign currency unit'
     },
     bps: {
-        value: formatNumber(data.basisPoints),
+        value: formatNumber(data.basisPoints, undefined, 0),
         description: 'Basis Points (bps) Markup'
     }
   }[activeTab as keyof typeof tabContent] || { value: '', description: '' };
@@ -128,9 +129,10 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
 
   return (
     <TooltipProvider>
+    {/* Figma Frame: 1000005264 - Main container for the results card. */}
     <div className="w-full max-w-xl mx-auto bg-white border border-[#F0F0F0] rounded-2xl p-8 flex flex-col gap-8 shadow-[0_4px_20px_rgba(0,0,0,0.05)] animate-in fade-in-50 slide-in-from-bottom-10 duration-500">
       
-      {/* Figma Frame: Tabs */}
+      {/* Figma Frame: 1272637978 - Tabs for cost analysis breakdown. */}
       <div role="tablist" aria-label="Cost analysis tabs" className="flex items-start p-1 gap-2 bg-[#F3F6F8] rounded-lg self-stretch">
         {tabs.map(tab => (
           <button
@@ -141,10 +143,10 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
             aria-controls={`tabpanel-${tab.id}`}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              'flex-1 flex items-center justify-center py-2 px-4 rounded-lg font-semibold text-base leading-6 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#3C82F6]',
+              'flex-1 flex items-center justify-center py-2 px-4 rounded-lg font-semibold text-base leading-6 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
               activeTab === tab.id
-                ? 'bg-white text-[#1F2937] border-b-2 border-[#3C82F6]'
-                : 'bg-transparent text-[#6B7280] hover:bg-white/50'
+                ? 'bg-white text-card-foreground shadow-sm'
+                : 'bg-transparent text-muted-foreground hover:bg-white/50'
             )}
           >
             {tab.label}
@@ -152,28 +154,27 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
         ))}
       </div>
       
-      {/* Figma Frame: Bank Charge Header */}
+      {/* Figma Frame: 1000004943 - Bank charge header displaying the primary cost information. */}
       <div id={`tabpanel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`} className="flex flex-col items-start gap-1 w-full">
-        <div className="flex items-center gap-2 font-sans text-[#4B5563] text-base leading-6 font-semibold">
+        <div className="flex items-center gap-2 font-sans text-muted-foreground text-sm">
             <CrossIcon />
             {data.bankName} charged you
         </div>
-        <p className="font-sans text-2xl leading-8 font-bold text-[#EF4444] ml-8">
+        <p className="font-sans text-2xl font-bold text-destructive ml-8">
             {formatNumber(data.hiddenCost, 'INR')} extra
         </p>
-        <p className="font-sans text-4xl leading-10 font-bold text-[#1E40AF]">
-            {formatNumber(data.hiddenCost, 'INR')} Total hidden FX charges
+        <p className="font-sans text-4xl font-bold text-[#1E40AF]">
+            {tabContent.value}
         </p>
-        <p className="font-sans text-base leading-6 text-[#4B5563] mt-1">
+        <p className="font-sans text-base text-muted-foreground mt-1">
             {tabContent.description}
         </p>
       </div>
 
-      {/* Figma Frame: Analysis Breakdown */}
+      {/* Figma Frame: 1000005242 - Detailed analysis breakdown. */}
       <div className="w-full bg-[#F9FAFB] rounded-lg p-6">
-        {/* Information on FIRA */}
         <div className='flex flex-col gap-4'>
-            <h3 className="font-sans text-lg font-semibold text-[#1F2937]">Information on FIRA</h3>
+            <h3 className="font-sans text-lg font-semibold text-card-foreground">Information on FIRA</h3>
             <div className="grid grid-cols-2 gap-x-12 gap-y-4">
                 <DetailRow label="Date of transaction" value={format(new Date(data.transactionDate), 'MMM dd, yyyy')} />
                 <DetailRow label="Purpose code" value={data.purposeCode} />
@@ -183,22 +184,21 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
             </div>
         </div>
 
-        <hr className="border-t border-[#E5E7EB] my-4" />
+        <hr className="border-t border-border my-4" />
 
-        {/* Calculations */}
         <div className='flex flex-col gap-4'>
-            <h3 className="font-sans text-lg font-semibold text-[#1F2937]">Calculations</h3>
+            <h3 className="font-sans text-lg font-semibold text-card-foreground">Calculations</h3>
             <div className="grid grid-cols-2 gap-x-12 gap-y-4">
                 <DetailRow label={`Mid-market Rate on ${format(new Date(data.transactionDate), 'MMM dd, yyyy')}`} value={`${formatNumber(data.midMarketRate)} INR`} />
                  <DetailRow 
                     label="Effective FX spread in INR" 
                     value={
                         <span className="flex items-center gap-1.5">
-                            {`${formatNumber(data.spread)} INR`}
+                            {`${formatNumber(data.spread, 'INR', 4)}`}
                             <Tooltip delayDuration={100}>
                                 <TooltipTrigger asChild>
                                     <button aria-label="More info about Effective FX spread" className="flex items-center justify-center">
-                                        <InfoIcon className="text-[#6B7280] cursor-pointer" />
+                                        <InfoIcon className="text-muted-foreground cursor-pointer" />
                                     </button>
                                 </TooltipTrigger>
                                 <TooltipContent className="bg-[#0A1F44] text-white border-none rounded-lg p-4 max-w-xs shadow-lg font-sans leading-5">
@@ -212,15 +212,15 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
         </div>
       </div>
 
-      {/* Effective Total Cost Panel */}
+      {/* Figma Frame: 1000005243 - Effective Total Cost summary panel. */}
        <div className="bg-[#F9FAFB] rounded-lg p-6 flex justify-between items-center w-full">
-            <span className="font-sans text-lg font-semibold text-[#1F2937]">Effective Total Cost</span>
-            <span className="flex items-center gap-2 font-sans text-lg font-medium text-[#111827]">
+            <span className="font-sans text-lg font-semibold text-card-foreground">Effective Total Cost</span>
+            <span className="flex items-center gap-2 font-sans text-lg font-medium text-foreground">
                 {formatNumber(data.hiddenCost, 'INR')}
                 <Tooltip delayDuration={100}>
                     <TooltipTrigger asChild>
                          <button aria-label="More info about Effective Total Cost" className="flex items-center justify-center">
-                            <InfoIcon className="text-[#6B7280] cursor-pointer" />
+                            <InfoIcon className="text-muted-foreground cursor-pointer" />
                         </button>
                     </TooltipTrigger>
                     <TooltipContent className="bg-[#0A1F44] text-white border-none rounded-lg p-4 max-w-xs shadow-lg font-sans leading-5">
@@ -231,25 +231,21 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
         </div>
 
 
-      {/* CTA Buttons & Footer */}
+      {/* Call to action buttons and footer section. */}
       <div className="flex flex-col items-center gap-4 mt-2 w-full">
-        <p className="font-sans text-base font-semibold text-center text-[#111827]">
+        <p className="font-sans text-base font-semibold text-center text-foreground">
           Need better pricing that is simple & transparent?
         </p>
         <div className="flex w-full gap-4">
-            <Button size="lg" className="flex-1 bg-[#7C3AED] text-white font-medium rounded-lg py-3 px-6 shadow-sm hover:bg-[#6B21A8] text-base" onClick={onContactClick}>
+            <Button size="lg" className="flex-1 bg-accent text-accent-foreground font-medium rounded-lg py-3 px-6 shadow-sm hover:bg-accent/90 text-base" onClick={onContactClick}>
                 Get in Touch
             </Button>
-            <Button size="lg" variant="outline" className="flex-1 border-[#E5E7EB] text-[#1F2937] font-medium rounded-lg py-3 px-6 hover:bg-[#F3F4F6] text-base" onClick={onUploadAnother}>
+            <Button size="lg" variant="outline" className="flex-1 border-border text-card-foreground font-medium rounded-lg py-3 px-6 hover:bg-muted text-base" onClick={onUploadAnother}>
                 <UploadIcon />
                 Upload Another FIRA
             </Button>
         </div>
-         <button className="flex items-center gap-2 font-sans text-sm font-medium text-[#1F2937]">
-            <CopyIcon />
-            Copy Link
-        </button>
-        <footer className="text-center text-xs text-[#6B7280] mt-6 font-sans">
+        <footer className="text-center text-xs text-muted-foreground mt-6 font-sans">
           Powered by Karbon & Google Gemini.
         </footer>
       </div>
@@ -261,8 +257,8 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
 function DetailRow({ label, value }: { label: string; value: string | React.ReactNode }) {
     return (
       <>
-        <p className="font-sans text-sm font-medium text-[#6B7280]">{label}</p>
-        <div className="font-sans text-sm text-[#111827] text-right">{value}</div>
+        <p className="font-sans text-sm font-medium text-muted-foreground">{label}</p>
+        <div className="font-sans text-sm text-foreground text-right">{value}</div>
       </>
     );
 }
