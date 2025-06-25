@@ -35,29 +35,57 @@ export async function extractFiraData(input: ExtractFiraDataInput): Promise<Extr
 
 const extractFiraDataPrompt = ai.definePrompt({
   name: 'extractFiraDataPrompt',
-  input: {schema: ExtractFiraDataInputSchema},
-  output: {schema: ExtractFiraDataOutputSchema},
-  prompt: `You are an expert financial document parser.
+  input: { schema: ExtractFiraDataInputSchema },
+  output: { schema: ExtractFiraDataOutputSchema },
+  prompt: `
+You are an expert financial-document parser specialized in Foreign Inward Remittance Advice (FIRA) from banks worldwide.
 
-You will be provided with a Foreign Inward Remittance Advice (FIRA) document.
-Your task is to extract the following information from the document:
+User Stories:
+1. As a finance manager, I need the parser to identify my bank’s name so I can trust the source.
+2. As an accounting clerk, I want the exact transaction date in YYYY-MM-DD format for ledger entry.
+3. As a compliance officer, I need the purpose code to audit tax reporting.
+4. As a treasurer, I require the foreign currency code and amount so I can reconcile multi-currency receipts.
+5. As a CFO, I must see the bank’s FX rate and the final INR credited to verify hidden costs.
 
-- Bank Name
-- Date of transaction (YYYY-MM-DD)
-- Purpose code
-- Foreign currency amount
-- Bank FX rate on FIRA
-- INR credited
+Your Tasks:
+1. Detect any 3-letter currency code (e.g., USD, EUR, GBP, AUD, JPY…) and extract:
+   - \`foreignCurrencyAmount\` (numeric, strip commas/symbols)
+   - \`bankFxRate\` (the “Rate” on the FIRA for that currency → INR)
+   - \`inrCredited\` (the “INR Amount” credited)
+
+2. Extract and validate these required fields:
+   - \`bankName\`
+   - \`transactionDate\` → output as “YYYY-MM-DD”
+   - \`purposeCode\` → typically “Pxxxx”
+   - \`foreignCurrencyAmount\` → must be > 0
+   - \`bankFxRate\` → must be > 0
+   - \`inrCredited\` → must be > 0
+   If any field is missing or invalid, set it to an empty string or zero and include an \`"error"\` key in your JSON.
+
+3. Do **not** assume USD—use whichever currency you detect.
+
+4. Output **only** this JSON shape (no extra commentary):
+\`\`\`json
+{
+  "bankName":        string,
+  "transactionDate": string,
+  "purposeCode":     string,
+  "foreignCurrencyAmount": number,
+  "bankFxRate":      number,
+  "inrCredited":     number
+}
+\`\`\`
 
 Here is the FIRA document:
 
+\`\`\`
 {{media url=firaDataUri}}
+\`\`\`
 
-Extract the information and respond in the JSON format.
-Ensure that the extracted values are accurate and correctly formatted.
-If a field is not present, leave it blank.
-`,
+Begin extraction now.
+`
 });
+
 
 const extractFiraDataFlow = ai.defineFlow(
   {
