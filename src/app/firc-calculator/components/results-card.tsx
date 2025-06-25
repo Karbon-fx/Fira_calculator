@@ -1,6 +1,7 @@
 'use client';
 /**
  * @fileoverview ResultsCard component displays the FIRA analysis results.
+ * This component is a pixel-perfect implementation of the Figma design.
  * @prop {FircResult} data - The calculated data from the FIRA document.
  * @prop {() => void} onUploadAnother - Handler to reset the form and upload a new file.
  * @prop {() => void} onContactClick - Handler for the "Get in Touch" button.
@@ -17,6 +18,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
+// --- ICONS ---
 // Figma Frame: image 24091 (Bank Icon)
 const BankIcon = () => (
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -27,8 +29,8 @@ const BankIcon = () => (
 );
 
 // Figma Frame: Vector (Info Icon)
-const InfoIcon = ({ className }: { className?: string }) => (
-    <svg width="17" height="21" viewBox="0 0 17 21" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+const InfoIcon = () => (
+    <svg width="17" height="21" viewBox="0 0 17 21" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M8.39999 15C12.266 15 15.4 11.866 15.4 8C15.4 4.13401 12.266 1 8.4 1C4.53401 1 1.40002 4.13401 1.40002 8C1.40002 11.866 4.53401 15 8.39999 15Z" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
         <path d="M8.40039 10.5V8" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
         <path d="M8.40039 5.5H8.40739" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -52,24 +54,29 @@ const CopyIcon = () => (
 );
 
 
+// --- HELPERS ---
 const formatNumber = (value: number, currency?: 'INR' | 'USD', decimals = 2) => {
     const options = {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
     };
-    const formatted = new Intl.NumberFormat('en-IN', options).format(value);
+    const formatted = new Intl.NumberFormat('en-IN', options).format(Math.abs(value));
     
-    if (currency) {
+    if (currency === 'INR') {
       return `₹${formatted}`;
+    }
+    if (currency === 'USD') {
+        return `$${formatted}`
     }
     return formatted;
 };
 
+// --- TOOLTIP CONTENTS ---
 function TooltipRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex justify-between items-center text-sm self-stretch">
+    <div className="flex justify-between items-center text-sm self-stretch w-full font-sans">
       <span className="text-white/80">{label}</span>
-      <div className="font-mono text-white flex items-center">
+      <div className="text-white flex items-center">
         <span>{value}</span>
       </div>
     </div>
@@ -79,26 +86,30 @@ function TooltipRow({ label, value }: { label: string; value: React.ReactNode })
 function SpreadTooltipContent({ data }: { data: FircResult }) {
     const transactionDate = format(new Date(data.transactionDate), 'dd/M/yyyy');
     return (
-        <div className="flex flex-col items-start gap-2 p-3 bg-[#0A1F44] rounded-[6px] w-[350px]">
-            <TooltipRow label={`MMR on ${transactionDate}`} value={formatNumber(data.midMarketRate, 'INR')} />
-            <div className='w-full border-b border-white/20 my-1'></div>
-            <TooltipRow label="User FX rate" value={<span>&ndash;{formatNumber(data.effectiveBankRate, 'INR')}</span>} />
-            <div className='w-full border-b border-white/20 my-1'></div>
-            <TooltipRow label="Effective FX spread" value={`${formatNumber(data.spread, 'INR', 6)}`} />
+        <div className="flex flex-col items-start p-3 bg-[#0A1F44] rounded-lg w-[350px] gap-2">
+            <TooltipRow label={`MMR on ${transactionDate}`} value={`${formatNumber(data.midMarketRate, undefined, 2)} INR`} />
+            <TooltipRow label="User FX rate" value={`(-)${formatNumber(data.effectiveBankRate, undefined, 2)}`} />
+            <div className="w-full border-b border-white/20"></div>
+            <TooltipRow label="Effective FX spread in INR" value={`${formatNumber(data.spread, undefined, 6)} INR`} />
         </div>
     );
 }
 
 function TotalCostTooltipContent({ data }: { data: FircResult }) {
     return (
-        <div className="flex flex-col items-start gap-2 p-[6px_8px] bg-[#0A1F44] rounded-[6px] w-[358px]">
-            <TooltipRow label="FX spread in INR" value={formatNumber(data.spread, 'INR')} />
-            <div className='w-full border-b border-white/20 my-1'></div>
-            <TooltipRow label="USD Amount" value={<span>&times; {formatNumber(data.foreignCurrencyAmount, 'USD').replace('₹','$')}</span>} />
-            <div className='w-full border-b border-white/20 my-1'></div>
-            <TooltipRow label="Total FX Cost" value={`${formatNumber(data.hiddenCost, 'INR')}`} />
+        <div className="flex flex-col items-start gap-2 p-3 bg-[#0A1F44] rounded-lg w-[358px] text-sm">
+            <TooltipRow label="FX spread in INR" value={`${formatNumber(data.spread, undefined, 2)} INR`} />
+            <TooltipRow label="&times; USD Amount" value={`${formatNumber(data.foreignCurrencyAmount, undefined, 2)} USD`} />
+            <div className="w-full border-b border-white/20 my-1"></div>
+            <TooltipRow label="Total FX Cost" value={formatNumber(data.hiddenCost, 'INR')} />
         </div>
     );
+}
+
+interface ResultsCardProps {
+    data: FircResult;
+    onUploadAnother: () => void;
+    onContactClick: () => void;
 }
 
 export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCardProps) {
@@ -115,8 +126,8 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
 - Bank: ${data.bankName}
 - Transaction Date: ${format(new Date(data.transactionDate), 'MMM dd, yyyy')}
 - Total Hidden Cost: ${formatNumber(data.hiddenCost, 'INR')}
-- Mid-Market Rate: ${formatNumber(data.midMarketRate)} INR
-- Effective FX Spread: ${formatNumber(data.spread, 'INR', 6)}
+- Mid-Market Rate: ${formatNumber(data.midMarketRate, undefined)} INR
+- Effective FX Spread: ${formatNumber(data.spread, undefined, 6)} INR
 - Basis Points: ${formatNumber(data.basisPoints, undefined, 0)}
     `;
     navigator.clipboard.writeText(resultText).then(() => {
@@ -129,7 +140,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
   const tabContent = {
     totalCost: {
         value: `${formatNumber(data.hiddenCost, 'INR')}`,
-        description: `on the mid-market rate of INR ${formatNumber(data.midMarketRate)}`
+        description: `on the mid-market rate of INR ${formatNumber(data.midMarketRate, undefined, 2)}`
     },
     paise: {
         value: `${formatNumber(data.paisePerUnit)} Paise`,
@@ -148,7 +159,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
     <div className="w-[450px] bg-white border border-[#F0F0F0] rounded-[16px] flex flex-col items-start p-[24px_16px] gap-4 animate-in fade-in duration-300">
       
         {/* Frame 1272637979 -> Tabs */}
-        <div role="tablist" aria-label="Cost analysis tabs" className="w-[418px] h-10 p-1 bg-[#F1F5F9] rounded-[6px] flex flex-row items-start self-stretch">
+        <div role="tablist" aria-label="Cost analysis tabs" className="w-[418px] h-10 p-1 bg-[#F1F5F9] rounded-[6px] flex flex-row items-center self-stretch">
             {tabs.map(tab => (
                 <button
                     key={tab.id}
@@ -158,7 +169,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
                     aria-controls={`tabpanel-${tab.id}`}
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                        'flex-1 flex flex-row justify-center items-center py-[6px] px-3 gap-2.5 h-8 rounded-[4px] font-medium text-sm leading-5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
+                        'flex-1 flex flex-row justify-center items-center py-[6px] px-3 gap-2.5 h-8 rounded-[4px] font-sans font-medium text-sm leading-5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
                         activeTab === tab.id ? 'bg-white text-[#0A1F44]' : 'bg-transparent text-[#6A7280] hover:bg-white/50'
                     )}
                 >
@@ -172,14 +183,14 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
             <div className="flex flex-col items-start gap-2 flex-1">
                 <div className="flex flex-row items-center gap-2 self-stretch">
                     <BankIcon />
-                    <p className="font-semibold text-base leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
+                    <p className="font-sans font-semibold text-base leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
                         {data.bankName} charged you
                     </p>
                 </div>
-                <p className="font-bold text-[28px] leading-8 tracking-[-0.56px] text-black">
+                <p className="font-sans font-bold text-[28px] leading-8 tracking-[-0.56px] text-black">
                     {tabContent.value}
                 </p>
-                <p className="font-normal text-sm leading-4 tracking-[-0.14px] text-[#0A1F44] self-stretch">
+                <p className="font-sans font-normal text-sm leading-4 tracking-[-0.14px] text-[#0A1F44] self-stretch">
                     {tabContent.description}
                 </p>
             </div>
@@ -187,12 +198,12 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
         
         {/* Frame 1000005242 - Analysis Breakdown */}
         <div className="w-[418px] flex flex-col items-start gap-3 self-stretch">
-            <p className="font-medium text-sm leading-5 text-[#1F1F1F]">Information on FIRA</p>
+            <p className="font-sans font-medium text-sm leading-5 text-[#1F1F1F]">Information on FIRA</p>
             <div className="flex flex-col justify-center items-start gap-1.5 self-stretch">
                 <DetailRow label="Date of transaction" value={format(new Date(data.transactionDate), 'MMM dd, yyyy')} />
                 <DetailRow label="Purpose code" value={data.purposeCode} />
-                <DetailRow label="USD Amount" value={`${formatNumber(data.foreignCurrencyAmount, 'USD').replace('₹','$')}`} />
-                <DetailRow label="User FX rate on FIRA" value={`${formatNumber(data.bankRate)} INR`} />
+                <DetailRow label="USD Amount" value={`${formatNumber(data.foreignCurrencyAmount, 'USD')}`} />
+                <DetailRow label="User FX rate on FIRA" value={`${formatNumber(data.bankRate, undefined)} INR`} />
                 <DetailRow label="INR after FX" value={formatNumber(data.inrCredited, 'INR')} />
             </div>
         </div>
@@ -202,14 +213,14 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
 
         {/* Calculations section */}
         <div className="w-[418px] flex flex-col items-start gap-3 self-stretch">
-            <p className="font-medium text-sm leading-5 text-[#1F1F1F]">Calculations</p>
+            <p className="font-sans font-medium text-sm leading-5 text-[#1F1F1F]">Calculations</p>
             <div className="flex flex-col justify-center items-start gap-1.5 self-stretch">
-                 <DetailRow label={`Mid-market Rate on ${format(new Date(data.transactionDate), 'MMM dd, yyyy')}`} value={`${formatNumber(data.midMarketRate)} INR`} />
+                 <DetailRow label={`Mid-market Rate on ${format(new Date(data.transactionDate), 'MMM dd, yyyy')}`} value={`${formatNumber(data.midMarketRate, undefined)} INR`} />
                  <DetailRow 
                     label="Effective FX spread in INR" 
                     value={
                         <span className="flex items-center gap-1.5">
-                            {`${formatNumber(data.spread, 'INR', 6)}`}
+                            {`${formatNumber(data.spread, undefined, 6)}`}
                              <Tooltip delayDuration={100}>
                                 <TooltipTrigger asChild>
                                     <button aria-label="More info about Effective FX spread" className="flex items-center justify-center">
@@ -228,8 +239,8 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
 
         {/* Frame 1000004943 - Effective Total Cost Panel */}
         <div className="w-[418px] h-[68.8px] bg-[#F5F8FF] rounded-[12px] p-[24px_16px] flex flex-row justify-between items-center self-stretch">
-            <span className="font-medium text-base leading-[18px] text-black tracking-[-0.16px]">Effective Total Cost</span>
-            <span className="flex items-center gap-1.5 font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
+            <span className="font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">Effective Total Cost</span>
+            <span className="flex items-center gap-1.5 font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
                 {formatNumber(data.hiddenCost, 'INR')}
                  <Tooltip delayDuration={100}>
                     <TooltipTrigger asChild>
@@ -246,18 +257,18 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
 
         {/* Frame 1272637998 - CTA and Footer */}
         <div className="w-[418px] flex flex-col items-start gap-3 self-stretch">
-            <p className="font-medium text-base leading-[18px] tracking-[-0.16px] text-[#1F1F1F]">
+            <p className="font-sans font-medium text-base leading-[18px] tracking-[-0.16px] text-[#1F1F1F]">
               Need better pricing that is simple & transparent?
             </p>
-            <Button className="w-full h-10 bg-[#145AFF] rounded-lg py-3 px-4 font-semibold text-sm leading-4 text-white hover:bg-blue-700" onClick={onContactClick}>
+            <Button className="w-full h-10 bg-[#145AFF] rounded-lg py-3 px-4 font-sans font-semibold text-sm leading-4 text-white hover:bg-blue-700" onClick={onContactClick}>
                 Get in Touch
             </Button>
             <div className="w-full flex justify-between items-center">
-                <button onClick={handleCopy} className="flex items-center gap-1.5 text-[#145AFF] font-normal text-sm leading-5">
+                <button onClick={handleCopy} className="flex items-center gap-1.5 text-[#145AFF] font-sans font-normal text-sm leading-5">
                     <CopyIcon />
                     <span>Copy Result</span>
                 </button>
-                <Button variant="ghost" className="flex items-center gap-1.5 text-[#145AFF] font-normal text-sm leading-5" onClick={onUploadAnother}>
+                <Button variant="ghost" className="flex items-center gap-1.5 text-[#145AFF] font-sans font-normal text-sm leading-5" onClick={onUploadAnother}>
                     <UploadAnotherIcon />
                     Upload Another FIRA
                 </Button>
@@ -271,8 +282,8 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
 function DetailRow({ label, value }: { label: string; value: string | React.ReactNode }) {
     return (
       <div className='flex justify-between items-center py-1 gap-1 w-full h-7'>
-        <p className="font-normal text-sm leading-5 text-[#6A7280]">{label}</p>
-        <div className="font-medium text-sm leading-5 text-[#1F1F1F] text-right">{value}</div>
+        <p className="font-sans font-normal text-sm leading-5 text-[#6A7280]">{label}</p>
+        <div className="font-sans font-medium text-sm leading-5 text-[#1F1F1F] text-right">{value}</div>
       </div>
     );
 }
