@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 import { XCircle } from 'lucide-react';
 import { processFiraDocument } from '../actions';
 import type { FircResult } from '../actions';
-import { LoadingOverlay } from './loading-overlay';
 
 // Figma: Upload Icon for Dropzone
 const UploadIcon = ({ className }: { className?: string }) => (
@@ -36,13 +35,20 @@ const initialState: { data: FircResult | null; error: string | null; } = {
   error: null,
 };
 
-export function UploadForm({ onComplete }: { onComplete: (data: FircResult) => void }) {
+export function UploadForm({ onComplete, onProcessingChange }: { 
+  onComplete: (data: FircResult) => void;
+  onProcessingChange: (isProcessing: boolean) => void;
+}) {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formState, formAction] = useActionState(processFiraDocument, initialState);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    onProcessingChange(isPending);
+  }, [isPending, onProcessingChange]);
 
   useEffect(() => {
     if (formState.data && !isPending) {
@@ -90,7 +96,6 @@ export function UploadForm({ onComplete }: { onComplete: (data: FircResult) => v
   
   return (
     <>
-      {isPending && <LoadingOverlay />}
       <div className="w-[450px] bg-white border border-[#F0F0F0] rounded-[16px] py-[48px] px-[32px] flex flex-col items-center gap-6">
         
         {formState.error && !isPending && (
