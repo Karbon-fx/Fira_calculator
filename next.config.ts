@@ -18,6 +18,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/firc-calculator',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

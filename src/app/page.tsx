@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
 
 export default function Home() {
-  redirect('/firc-calculator');
+  // The redirect is now handled in next.config.js
+  return null;
 }
