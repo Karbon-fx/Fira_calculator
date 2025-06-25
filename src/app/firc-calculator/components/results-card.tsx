@@ -19,12 +19,6 @@ import {
 } from '@/components/ui/tooltip';
 
 // --- ICONS ---
-const BankIcon = () => (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="11" cy="11" r="11" fill="#D9D9D9"/>
-    </svg>
-);
-
 const InfoIcon = () => (
   <svg width="17" height="21" viewBox="0 0 17 21" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M8.39999 15C12.266 15 15.4 11.866 15.4 8C15.4 4.13401 12.266 1 8.4 1C4.53401 1 1.40002 4.13401 1.40002 8C1.40002 11.866 4.53401 15 8.39999 15Z" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
@@ -176,7 +170,6 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
         <div id={`tabpanel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`} className="w-[418px] border-[2px] border-[#EEF3F7] rounded-[12px] flex flex-row justify-between items-center p-[16px_12px] gap-[11px] self-stretch">
           <div className="flex flex-col items-start gap-2 flex-1">
             <div className="flex flex-row items-center gap-2 self-stretch">
-              <BankIcon />
               <p className="font-sans font-semibold text-base leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
                 {data.bankName} charged you
               </p>
@@ -265,7 +258,7 @@ export function ResultsCard({ data, onUploadAnother, onContactClick }: ResultsCa
                 <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#145AFF] transition-all duration-300 group-hover:w-full"></span>
               </span>
             </button>
-            <button className="group flex items-center gap-1.5 text-[#145AFF] font-sans font-normal text-sm leading-5" onClick={onUploadAnother}>
+            <button className="group flex items-center gap-1.5 text-[#145AFF] font-sans font-normal text-sm leading-5 hover:bg-transparent" onClick={onUploadAnother}>
               <UploadAnotherIcon />
               <span className="relative py-1">
                 Upload Another FIRA
