@@ -185,7 +185,7 @@ function TotalCostTooltipContent({ data }: { data: FircResult }) {
         value={`${formatNumber(data.spread, 'INR', 2)}`}
       />
       <TooltipRow
-        label={`× ${data.foreignCurrencyCode} Amount`}
+        label={`(x) ${data.foreignCurrencyCode} Amount`}
         value={`${formatNumber(data.foreignCurrencyAmount, data.foreignCurrencyCode, 2)}`}
       />
       <div className="w-full border-b border-white/20 my-1"></div>
@@ -313,8 +313,8 @@ export function ResultsCard({
           aria-labelledby={`tab-${activeTab}`}
           className="w-full border border-[#EEF3F7] rounded-[12px] flex flex-col items-start justify-center p-[16px_12px] gap-[8px] self-stretch"
         >
-            <p className="font-sans font-bold text-[16px] leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
-              {data.bankName} charged you
+            <p className="font-sans text-[16px] leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
+              <span className="font-bold">{data.bankName} has charged you</span>
             </p>
             <div className="flex flex-col items-start gap-1">
                 <p className="font-sans font-bold text-[28px] leading-[32px] tracking-[-0.56px] text-black">
@@ -510,7 +510,7 @@ function DetailRow({
 }) {
   return (
     <div className="flex justify-between items-center py-1 gap-1 w-full h-7">
-      <p className="font-sans font-medium text-sm leading-5 text-[#6A7280]">
+      <p className="font-sans font-semibold text-sm leading-5 text-[#6A7280]">
         {label}
       </p>
       <div className="font-sans font-medium text-sm leading-5 text-[#1F1F1F] text-right">
