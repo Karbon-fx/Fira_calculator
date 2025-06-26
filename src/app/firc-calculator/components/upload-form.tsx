@@ -7,6 +7,48 @@ import { cn } from '@/lib/utils';
 import { XCircle } from 'lucide-react';
 import { z } from 'zod';
 
+const FiraUploadIllustration = ({ className }: { className?: string }) => (
+  <svg
+    width="80"
+    height="80"
+    viewBox="0 0 120 120"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+  >
+    <rect
+      x="20"
+      y="15"
+      width="80"
+      height="90"
+      rx="8"
+      fill="#F8FAFC"
+      stroke="#E2E8F0"
+      strokeWidth="1"
+    />
+    <rect x="32" y="32" width="56" height="3" rx="1.5" fill="#CBD5E1" />
+    <rect x="32" y="42" width="48" height="3" rx="1.5" fill="#CBD5E1" />
+    <rect x="32" y="52" width="52" height="3" rx="1.5" fill="#CBD5E1" />
+    <rect x="32" y="62" width="40" height="3" rx="1.5" fill="#CBD5E1" />
+    <circle
+      cx="60"
+      cy="85"
+      r="18"
+      fill="#3B82F6"
+      stroke="#FFFFFF"
+      strokeWidth="2"
+    />
+    <path
+      d="M60 76L60 92M60 76L54 82M60 76L66 82"
+      stroke="#FFFFFF"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <ellipse cx="60" cy="106" rx="25" ry="3" fill="#000000" opacity="0.08" />
+  </svg>
+);
+
 
 // Figma: Upload Icon for Dropzone
 const UploadIcon = ({ className }: { className?: string }) => (
@@ -96,8 +138,10 @@ export function UploadForm({ onFileSelect }: {
   
   return (
     <>
-      <div className="w-[450px] bg-white border border-[#F0F0F0] rounded-[16px] py-[48px] px-[32px] flex flex-col items-center gap-6">
+      <div className="w-[450px] bg-white border border-[#F0F0F0] rounded-[16px] py-[32px] px-[32px] flex flex-col items-center gap-4">
         
+        <FiraUploadIllustration />
+
         {error && (
           <div className="w-full">
             <Alert variant="destructive">
