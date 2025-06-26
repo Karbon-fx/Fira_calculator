@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { cn } from '@/lib/utils';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'FIRC Clarity',
@@ -18,6 +19,22 @@ export default function RootLayout({
       <body className={cn("font-sans antialiased h-full")}>
         {children}
         <Toaster />
+        <Script src="https://cdn.jotfor.ms/s/static/feedback2.js" type="text/javascript" strategy="lazyOnload" />
+        <Script id="jotform-init" strategy="lazyOnload">
+          {`
+            new JotformFeedback({
+              formId: '251765324497062',
+              base: 'https://form.jotform.com/',
+              windowTitle: 'Get in Touch',
+              backgroundColor: '#0e4c96',
+              fontColor: '#FFFFFF',
+              type: 'lightbox',
+              height: 500,
+              width: 700,
+              openOnLoad: false
+            });
+          `}
+        </Script>
       </body>
     </html>
   );
