@@ -79,8 +79,8 @@ export function ErrorCard({
         
         <div className="w-[386px] bg-[#F5F8FF] border border-[#DDE4ED] rounded-[12px] p-[16px_12px] flex flex-row items-start gap-[6px] self-stretch">
             <InfoIcon />
-            <p className="flex-grow font-sans font-normal text-[12px] leading-[16px] text-black">
-                We couldn’t read the file. Please check the file and try uploading a valid FIRA document.
+            <p className="flex-grow font-sans font-bold text-[12px] leading-[16px] text-black">
+                We were unable to read the file. Kindly verify the file and attempt to upload a valid FIRA document.
             </p>
         </div>
 
