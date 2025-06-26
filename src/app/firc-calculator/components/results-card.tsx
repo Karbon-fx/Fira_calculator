@@ -185,7 +185,7 @@ function TotalCostTooltipContent({ data }: { data: FircResult }) {
         value={`${formatNumber(data.spread, 'INR', 2)}`}
       />
       <TooltipRow
-        label={`${data.foreignCurrencyCode} Amount`}
+        label={`× ${data.foreignCurrencyCode} Amount`}
         value={`${formatNumber(data.foreignCurrencyAmount, data.foreignCurrencyCode, 2)}`}
       />
       <div className="w-full border-b border-white/20 my-1"></div>
@@ -519,5 +519,3 @@ function DetailRow({
     </div>
   );
 }
-
-    
