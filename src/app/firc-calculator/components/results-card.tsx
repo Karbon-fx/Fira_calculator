@@ -296,10 +296,10 @@ export function ResultsCard({
               aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex-1 flex flex-row justify-center items-center h-8 font-sans font-medium text-sm leading-5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
+                'flex-1 flex flex-row justify-center items-center h-8 font-sans text-sm leading-5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
                 activeTab === tab.id
-                  ? 'bg-white text-[#0A1F44] rounded-[4px] shadow-sm'
-                  : 'bg-transparent text-[#6A7280] hover:bg-white/50 rounded-[4px]'
+                  ? 'bg-white text-[#0A1F44] rounded-[4px] shadow-sm font-bold'
+                  : 'bg-transparent text-[#6A7280] hover:bg-white/50 rounded-[4px] font-medium'
               )}
             >
               {tab.label}
@@ -327,7 +327,7 @@ export function ResultsCard({
         </div>
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-sans font-bold text-[14px] leading-[20px] text-[#1F1F1F]">
+          <p className="font-sans font-bold text-sm leading-5 text-[#1F1F1F]">
             Information on FIRA
           </p>
           <div className="flex flex-col justify-center items-start gap-[6px] self-stretch">
@@ -354,7 +354,7 @@ export function ResultsCard({
         <hr className="w-full border-t border-[#F0F0F0]" />
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-sans font-bold text-[14px] leading-[20px] text-[#1F1F1F]">
+          <p className="font-sans font-bold text-sm leading-5 text-[#1F1F1F]">
             Calculations
           </p>
           <div className="flex flex-col justify-center items-start gap-2 self-stretch w-full">
@@ -365,27 +365,29 @@ export function ResultsCard({
               )}`}
               value={`${formatNumber(data.midMarketRate, 'INR', 2)}`}
             />
-            <DetailRow
-              label="Effective FX spread in INR"
-              value={
-                <span className="flex items-center gap-1.5">
-                  {`${formatNumber(data.spread, 'INR', 2)}`}
-                  <Tooltip delayDuration={100}>
-                    <TooltipTrigger asChild>
-                      <button
-                        aria-label="More info about Effective FX spread"
-                        className="flex items-center justify-center"
-                      >
-                        <InfoIcon />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-transparent border-none p-0 shadow-none">
-                      <SpreadTooltipContent data={data} />
-                    </TooltipContent>
-                  </Tooltip>
-                </span>
-              }
-            />
+            {activeTab !== 'paise' && (
+              <DetailRow
+                label="Effective FX spread in INR"
+                value={
+                  <span className="flex items-center gap-1.5">
+                    {`${formatNumber(data.spread, 'INR', 2)}`}
+                    <Tooltip delayDuration={100}>
+                      <TooltipTrigger asChild>
+                        <button
+                          aria-label="More info about Effective FX spread"
+                          className="flex items-center justify-center"
+                        >
+                          <InfoIcon />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-transparent border-none p-0 shadow-none">
+                        <SpreadTooltipContent data={data} />
+                      </TooltipContent>
+                    </Tooltip>
+                  </span>
+                }
+              />
+            )}
           </div>
         </div>
         
