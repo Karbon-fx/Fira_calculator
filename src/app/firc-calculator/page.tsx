@@ -63,11 +63,6 @@ export default function FircCalculatorPage() {
     setErrorKey(null);
   };
 
-  const handleContactClick = () => {
-    // Placeholder for "Get in Touch" logic
-    alert('Get in Touch clicked!');
-  };
-
   const renderContent = () => {
     switch (view) {
       case 'loading':
@@ -77,7 +72,6 @@ export default function FircCalculatorPage() {
           <ResultsCard
             data={resultData!}
             onUploadAnother={handleReset}
-            onContactClick={handleContactClick}
           />
         );
       case 'error':

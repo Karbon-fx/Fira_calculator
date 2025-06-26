@@ -1,11 +1,9 @@
-
 'use client';
 /**
  * @fileoverview ResultsCard component displays the FIRA analysis results.
  * This component is a pixel-perfect implementation of the Figma design.
  * @prop {FircResult} data - The calculated data from the FIRA document.
  * @prop {() => void} onUploadAnother - Handler to reset the form and upload a new file.
- * @prop {() => void} onContactClick - Handler for the "Get in Touch" button.
  */
 import { useState } from 'react';
 import type { FircResult } from '../actions';
@@ -123,16 +121,16 @@ const formatNumber = (
     Math.abs(value)
   );
 
+  let symbol = '';
   if (currencyCode === 'INR') {
-    return `₹ ${formatted}`;
+    symbol = '₹ ';
+  } else if (currencyCode === 'USD') {
+    symbol = '$ ';
+  } else if (currencyCode) {
+    symbol = `${currencyCode} `;
   }
-  if (currencyCode === 'USD') {
-    return `$ ${formatted}`;
-  }
-  if (currencyCode) {
-    return `${currencyCode} ${formatted}`;
-  }
-  return formatted;
+
+  return `${symbol}${formatted}`;
 };
 
 // --- TOOLTIP CONTENTS ---
@@ -186,10 +184,17 @@ function TotalCostTooltipContent({ data }: { data: FircResult }) {
       />
       <TooltipRow
         label={`(x) ${data.foreignCurrencyCode} Amount`}
-        value={`${formatNumber(data.foreignCurrencyAmount, data.foreignCurrencyCode, 2)}`}
+        value={`${formatNumber(
+          data.foreignCurrencyAmount,
+          data.foreignCurrencyCode,
+          2
+        )}`}
       />
       <div className="w-full border-b border-white/20 my-1"></div>
-      <TooltipRow label="Total FX Cost" value={formatNumber(data.hiddenCost, 'INR')} />
+      <TooltipRow
+        label="Total FX Cost"
+        value={formatNumber(data.hiddenCost, 'INR')}
+      />
     </div>
   );
 }
@@ -218,13 +223,11 @@ function BpsTooltipContent({ data }: { data: FircResult }) {
 interface ResultsCardProps {
   data: FircResult;
   onUploadAnother: () => void;
-  onContactClick: () => void;
 }
 
 export function ResultsCard({
   data,
   onUploadAnother,
-  onContactClick,
 }: ResultsCardProps) {
   const [activeTab, setActiveTab] = useState('totalCost');
 
@@ -313,17 +316,17 @@ export function ResultsCard({
           aria-labelledby={`tab-${activeTab}`}
           className="w-full border border-[#EEF3F7] rounded-[12px] flex flex-col items-start justify-center p-[16px_12px] gap-[8px] self-stretch"
         >
-            <p className="font-sans font-bold text-[16px] leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
-              {data.bankName} has charged you
+          <p className="font-sans font-bold text-[16px] leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
+            <span className="font-semibold">{data.bankName} has charged you</span>
+          </p>
+          <div className="flex flex-col items-start gap-1">
+            <p className="font-sans font-bold text-[28px] leading-[32px] tracking-[-0.56px] text-black">
+              {tabContent.value}
             </p>
-            <div className="flex flex-col items-start gap-1">
-                <p className="font-sans font-bold text-[28px] leading-[32px] tracking-[-0.56px] text-black">
-                {tabContent.value}
-                </p>
-                <p className="font-sans font-medium text-[14px] leading-[16px] tracking-[-0.14px] text-[#0A1F44]">
-                {tabContent.description}
-                </p>
-            </div>
+            <p className="font-sans font-medium text-[14px] leading-[16px] tracking-[-0.14px] text-[#0A1F44]">
+              {tabContent.description}
+            </p>
+          </div>
         </div>
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
@@ -338,7 +341,10 @@ export function ResultsCard({
             <DetailRow label="Purpose code" value={data.purposeCode} />
             <DetailRow
               label={`${data.foreignCurrencyCode} Amount`}
-              value={`${formatNumber(data.foreignCurrencyAmount, data.foreignCurrencyCode)}`}
+              value={`${formatNumber(
+                data.foreignCurrencyAmount,
+                data.foreignCurrencyCode
+              )}`}
             />
             <DetailRow
               label="User FX rate on FIRA"
@@ -390,7 +396,7 @@ export function ResultsCard({
             )}
           </div>
         </div>
-        
+
         {activeTab === 'totalCost' && (
           <div className="w-full bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
             <span className="font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
@@ -469,7 +475,13 @@ export function ResultsCard({
           </p>
           <Button
             className="w-full h-10 bg-[#145AFF] rounded-lg py-3 px-4 font-sans font-semibold text-sm leading-4 text-white hover:bg-[#145AFF]/90"
-            onClick={onContactClick}
+            onClick={() => {
+              window.open(
+                'https://form.jotform.com/251765324497062',
+                'blank',
+                'scrollbars=yes,toolbar=no,width=700,height=500'
+              );
+            }}
           >
             Get in Touch
           </Button>
@@ -479,7 +491,7 @@ export function ResultsCard({
               className="group flex items-center gap-1.5 text-[#145AFF] font-sans font-medium text-sm leading-5"
             >
               <CopyIcon />
-              <span className="relative py-1">
+              <span className="relative py-1 font-medium">
                 Copy Result
                 <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#145AFF] transition-all duration-300 group-hover:w-full"></span>
               </span>
@@ -489,7 +501,7 @@ export function ResultsCard({
               onClick={onUploadAnother}
             >
               <UploadAnotherIcon />
-              <span className="relative py-1">
+              <span className="relative py-1 font-medium">
                 Upload Another FIRA
                 <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#145AFF] transition-all duration-300 group-hover:w-full"></span>
               </span>
