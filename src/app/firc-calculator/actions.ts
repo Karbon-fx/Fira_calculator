@@ -62,10 +62,8 @@ export async function analyzeFira({
       return { data: null, error: 'Foreign currency amount cannot be zero.' };
     }
     
-    // CRITICAL CALCULATION: Use the extracted bankFxRate directly for calculations
+    // CRITICAL CALCULATION: Use the extracted bankFxRate and full-precision spread
     // to ensure accuracy and avoid rounding drift from re-deriving the rate.
-    // spread = midMarketRate - bankFxRate
-    // hiddenCost = spread * foreignCurrencyAmount
     const spread = D - bankFxRate;
     const hiddenCost = spread * A;
     const paisePerUnit = spread * 100;
