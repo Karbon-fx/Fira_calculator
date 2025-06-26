@@ -73,7 +73,7 @@ export function ErrorCard({
         
         <FiraUploadErrorIcon />
 
-        <h1 className="w-[386px] font-sans font-medium text-[16px] leading-[18px] text-center tracking-[-0.16px] text-[#0A1F44] self-stretch">
+        <h1 className="w-[386px] font-sans font-bold text-[16px] leading-[18px] text-center tracking-[-0.16px] text-[#0A1F44] self-stretch">
             Upload Failed – File appears to be corrupted
         </h1>
         
