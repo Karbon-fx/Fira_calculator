@@ -1,3 +1,4 @@
+
 'use client';
 /**
  * @fileoverview ResultsCard component displays the FIRA analysis results.
@@ -184,7 +185,7 @@ function TotalCostTooltipContent({ data }: { data: FircResult }) {
         value={`${formatNumber(data.spread, 'INR', 2)}`}
       />
       <TooltipRow
-        label={`&times; ${data.foreignCurrencyCode} Amount`}
+        label={`${data.foreignCurrencyCode} Amount`}
         value={`${formatNumber(data.foreignCurrencyAmount, data.foreignCurrencyCode, 2)}`}
       />
       <div className="w-full border-b border-white/20 my-1"></div>
@@ -293,7 +294,6 @@ export function ResultsCard({
               id={`tab-${tab.id}`}
               role="tab"
               aria-selected={activeTab === tab.id}
-              aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
                 'flex-1 flex flex-row justify-center items-center h-8 font-sans text-sm leading-5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
@@ -519,3 +519,5 @@ function DetailRow({
     </div>
   );
 }
+
+    
