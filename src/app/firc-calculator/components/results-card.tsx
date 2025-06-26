@@ -110,7 +110,7 @@ const formatNumber = (
 ) => {
   if (typeof value !== 'number' || isNaN(value)) {
     return currencyCode === 'INR'
-      ? '₹0.00'
+      ? '₹ 0.00'
       : currencyCode
         ? `${currencyCode} 0.00`
         : '0.00';
@@ -124,10 +124,10 @@ const formatNumber = (
   );
 
   if (currencyCode === 'INR') {
-    return `₹${formatted}`;
+    return `₹ ${formatted}`;
   }
   if (currencyCode === 'USD') {
-    return `$${formatted}`;
+    return `$ ${formatted}`;
   }
   if (currencyCode) {
     return `${currencyCode} ${formatted}`;
@@ -313,14 +313,14 @@ export function ResultsCard({
           aria-labelledby={`tab-${activeTab}`}
           className="w-full border border-[#EEF3F7] rounded-[12px] flex flex-col items-start justify-center p-[16px_12px] gap-[8px] self-stretch"
         >
-            <p className="font-sans text-[16px] leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
-              <span className="font-bold">{data.bankName} has charged you</span>
+            <p className="font-sans font-bold text-[16px] leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
+              {data.bankName} has charged you
             </p>
             <div className="flex flex-col items-start gap-1">
                 <p className="font-sans font-bold text-[28px] leading-[32px] tracking-[-0.56px] text-black">
                 {tabContent.value}
                 </p>
-                <p className="font-sans font-normal text-[14px] leading-[16px] tracking-[-0.14px] text-[#0A1F44]">
+                <p className="font-sans font-medium text-[14px] leading-[16px] tracking-[-0.14px] text-[#0A1F44]">
                 {tabContent.description}
                 </p>
             </div>
@@ -476,7 +476,7 @@ export function ResultsCard({
           <div className="w-full flex justify-between items-center">
             <button
               onClick={handleCopy}
-              className="group flex items-center gap-1.5 text-[#145AFF] font-sans font-normal text-sm leading-5"
+              className="group flex items-center gap-1.5 text-[#145AFF] font-sans font-medium text-sm leading-5"
             >
               <CopyIcon />
               <span className="relative py-1">
@@ -485,7 +485,7 @@ export function ResultsCard({
               </span>
             </button>
             <button
-              className="group flex items-center gap-1.5 text-[#145AFF] font-sans font-normal text-sm leading-5 hover:bg-transparent"
+              className="group flex items-center gap-1.5 text-[#145AFF] font-sans font-medium text-sm leading-5 hover:bg-transparent"
               onClick={onUploadAnother}
             >
               <UploadAnotherIcon />
