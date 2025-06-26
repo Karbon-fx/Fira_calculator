@@ -19,20 +19,27 @@ export default function RootLayout({
       <body className={cn("font-sans antialiased h-full")}>
         {children}
         <Toaster />
-        <Script src="https://cdn.jotfor.ms/s/static/feedback2.js" type="text/javascript" strategy="lazyOnload" />
-        <Script id="jotform-init" strategy="lazyOnload">
+        <Script src="https://cdn.jotfor.ms/s/static/feedback2.js" type="text/javascript" />
+        <Script id="jotform-init">
           {`
-            new JotformFeedback({
-              formId: '251765324497062',
-              base: 'https://form.jotform.com/',
-              windowTitle: 'Get in Touch',
-              backgroundColor: '#0e4c96',
-              fontColor: '#FFFFFF',
-              type: 'lightbox',
-              height: 500,
-              width: 700,
-              openOnLoad: false
-            });
+            const initJotform = () => {
+              if (typeof JotformFeedback !== 'undefined') {
+                new JotformFeedback({
+                  formId: '251765324497062',
+                  base: 'https://form.jotform.com/',
+                  windowTitle: 'Get in Touch',
+                  backgroundColor: '#0e4c96',
+                  fontColor: '#FFFFFF',
+                  type: 'lightbox',
+                  height: 500,
+                  width: 700,
+                  openOnLoad: false
+                });
+              } else {
+                setTimeout(initJotform, 100);
+              }
+            };
+            initJotform();
           `}
         </Script>
       </body>
