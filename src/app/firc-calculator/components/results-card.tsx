@@ -510,7 +510,7 @@ function DetailRow({
 }) {
   return (
     <div className="flex justify-between items-center py-1 gap-1 w-full h-7">
-      <p className="font-sans font-normal text-sm leading-5 text-[#6A7280]">
+      <p className="font-sans font-medium text-sm leading-5 text-[#6A7280]">
         {label}
       </p>
       <div className="font-sans font-medium text-sm leading-5 text-[#1F1F1F] text-right">
