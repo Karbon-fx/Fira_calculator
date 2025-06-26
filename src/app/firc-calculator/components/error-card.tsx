@@ -1,5 +1,7 @@
 'use client';
 
+import { getErrorContent, ErrorKey } from '../error-definitions';
+
 // This card is a pixel-perfect implementation of the Figma design for a FIRA upload error state.
 // It is displayed when a file is determined to be unreadable or corrupted.
 
@@ -63,24 +65,27 @@ const InfoIcon = () => (
   );
 
 export function ErrorCard({
+  errorKey,
   onRetry,
 }: {
-  message: string; // The message prop is kept for interface consistency but is not used, per design.
+  errorKey: ErrorKey | string;
   onRetry: () => void;
 }) {
+  const { headline, message } = getErrorContent(errorKey);
+
   return (
     <div className="w-[450px] h-[749px] bg-white border border-[#F0F0F0] rounded-[16px] flex flex-col items-center justify-center p-[48px_32px] gap-[24px]">
         
         <FiraUploadErrorIcon />
 
         <h1 className="w-[386px] font-sans font-bold text-[16px] leading-[18px] text-center tracking-[-0.16px] text-[#0A1F44] self-stretch">
-            Upload Failed – File appears to be corrupted
+            {headline}
         </h1>
         
         <div className="w-[386px] bg-[#F5F8FF] border border-[#DDE4ED] rounded-[12px] p-[16px_12px] flex flex-row items-start gap-[6px] self-stretch">
             <InfoIcon />
             <p className="flex-grow font-sans font-bold text-[12px] leading-[16px] text-black">
-                We were unable to read the file. Kindly verify the file and attempt to upload a valid FIRA document.
+                {message}
             </p>
         </div>
 

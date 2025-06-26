@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useRef, DragEvent } from 'react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { XCircle } from 'lucide-react';
 import { z } from 'zod';
+import type { ErrorKey } from '../error-definitions';
 
 // Figma: Upload Icon for Dropzone
 const UploadIcon = ({ className }: { className?: string }) => (
@@ -43,24 +42,31 @@ const fileSchema = z
     'Invalid file type. Only PDF, PNG, and JPEG are accepted.'
   );
 
-export function UploadForm({ onFileSelect }: { 
+export function UploadForm({ onFileSelect, onValidationError }: { 
   onFileSelect: (file: File) => void;
+  onValidationError: (errorKey: ErrorKey) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const handleFile = (selectedFile: File | null) => {
     if (selectedFile) {
       const validation = fileSchema.safeParse(selectedFile);
       if (!validation.success) {
-        setError(validation.error.errors[0].message);
+        const issue = validation.error.issues[0];
+        if (issue.message.includes('size')) {
+          onValidationError('FILE_TOO_LARGE');
+        } else if (issue.message.includes('type')) {
+          onValidationError('UNSUPPORTED_FILE_TYPE');
+        } else {
+          onValidationError('UNKNOWN_ERROR');
+        }
         setFile(null);
         if (fileInputRef.current) fileInputRef.current.value = '';
         return;
       }
-      setError(null);
+
       setFile(selectedFile);
       onFileSelect(selectedFile);
     }
@@ -96,16 +102,6 @@ export function UploadForm({ onFileSelect }: {
   return (
     <>
       <div className="w-[450px] bg-white border border-[#F0F0F0] rounded-[16px] py-[32px] px-[32px] flex flex-col items-center gap-4">
-
-        {error && (
-          <div className="w-full">
-            <Alert variant="destructive">
-              <XCircle className="h-4 w-4" />
-              <AlertTitle>Invalid File</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          </div>
-        )}
 
         <div className="w-[386px] pt-4">
           <h1 className="font-sans text-[16px] leading-[18px] font-bold text-center text-[#0A1F44]">

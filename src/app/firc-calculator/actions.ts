@@ -1,6 +1,7 @@
 'use server';
 
 import { extractFiraData } from '@/ai/flows/extract-fira-data';
+import type { ErrorKey } from './error-definitions';
 
 export interface FircResult {
   bankName: string;
@@ -22,18 +23,18 @@ export async function analyzeFira({
   firaDataUri,
 }: {
   firaDataUri: string;
-}): Promise<{ data: FircResult | null; error: string | null }> {
+}): Promise<{ data: FircResult | null; error: ErrorKey | null }> {
   try {
     const FREECURRENCY_API_KEY = process.env.FREECURRENCY_API_KEY || 'fca_live_kKJhVpXCQYJEOWhsFSQNXM3fvoXQaPbn0S3BSzT0';
 
     const extractedData = await extractFiraData({ firaDataUri });
 
     if (extractedData.error) {
-      return { data: null, error: extractedData.error };
+      return { data: null, error: 'EXTRACTION_FAILED' };
     }
 
     if (!extractedData.transactionDate || !extractedData.foreignCurrencyAmount || !extractedData.inrCredited || !extractedData.foreignCurrencyCode || !extractedData.bankFxRate) {
-        return { data: null, error: 'OCR failed to extract all required data. Please try another document or a clearer image.' };
+        return { data: null, error: 'EXTRACTION_FAILED' };
     }
 
     const fxApiUrl = `https://api.freecurrencyapi.com/v1/historical?apikey=${FREECURRENCY_API_KEY}&date=${extractedData.transactionDate}&base_currency=${extractedData.foreignCurrencyCode}&currencies=INR`;
@@ -41,16 +42,14 @@ export async function analyzeFira({
     const fxResponse = await fetch(fxApiUrl);
     
     if (!fxResponse.ok) {
-        const apiError = await fxResponse.json();
-        const errorMessage = apiError.message || `Could not fetch FX rate for ${extractedData.transactionDate}. The API may not have data for this date or currency.`;
-        return { data: null, error: errorMessage };
+        return { data: null, error: 'FX_API_ERROR' };
     }
 
     const fxData = await fxResponse.json();
     const midMarketRate = fxData.data?.[extractedData.transactionDate]?.INR;
 
     if (!midMarketRate) {
-        return { data: null, error: `FX rate not found for ${extractedData.foreignCurrencyCode} on ${extractedData.transactionDate}.` };
+        return { data: null, error: 'FX_API_ERROR' };
     }
 
     const A = extractedData.foreignCurrencyAmount;
@@ -59,7 +58,7 @@ export async function analyzeFira({
     const bankFxRate = extractedData.bankFxRate;
 
     if (A === 0) {
-      return { data: null, error: 'Foreign currency amount cannot be zero.' };
+      return { data: null, error: 'EXTRACTION_FAILED' };
     }
     
     // CRITICAL CALCULATION: Use the extracted bankFxRate and full-precision spread
@@ -92,14 +91,16 @@ export async function analyzeFira({
 
   } catch (e) {
     console.error(e);
-    let errorMessage = 'An unexpected error occurred. Please try again.';
+    let errorKey: ErrorKey = 'UNKNOWN_ERROR';
     if (e instanceof Error) {
         if (e.message.includes('deadline')) {
-            errorMessage = 'The request timed out. The document may be too complex. Please try again.';
+            errorKey = 'TIMEOUT_ERROR';
         } else if (e.message.includes('extractFiraData')) {
-            errorMessage = 'Failed to analyze document. Please ensure it is a valid FIRA.';
+            errorKey = 'EXTRACTION_FAILED';
+        } else if (e.message.toLowerCase().includes('fetch')) {
+            errorKey = 'NETWORK_ERROR';
         }
     }
-    return { data: null, error: errorMessage };
+    return { data: null, error: errorKey };
   }
 }
