@@ -313,7 +313,7 @@ export function ResultsCard({
           aria-labelledby={`tab-${activeTab}`}
           className="w-full border border-[#EEF3F7] rounded-[12px] flex flex-col items-start justify-center p-[16px_12px] gap-[8px] self-stretch"
         >
-            <p className="font-sans font-semibold text-[16px] leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
+            <p className="font-sans font-bold text-[16px] leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
               {data.bankName} charged you
             </p>
             <div className="flex flex-col items-start gap-1">
@@ -464,7 +464,7 @@ export function ResultsCard({
         )}
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-sans font-medium text-base leading-[18px] tracking-[-0.16px] text-[#1F1F1F]">
+          <p className="font-sans font-bold text-base leading-[18px] tracking-[-0.16px] text-[#1F1F1F]">
             Need better pricing that is simple & transparent?
           </p>
           <Button
