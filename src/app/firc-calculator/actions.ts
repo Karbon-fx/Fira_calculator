@@ -2,8 +2,6 @@
 
 import { extractFiraData } from '@/ai/flows/extract-fira-data';
 
-const FREECURRENCY_API_KEY = process.env.FREECURRENCY_API_KEY || 'fca_live_kKJhVpXCQYJEOWhsFSQNXM3fvoXQaPbn0S3BSzT0';
-
 export interface FircResult {
   bankName: string;
   transactionDate: string;
@@ -26,6 +24,8 @@ export async function analyzeFira({
   firaDataUri: string;
 }): Promise<{ data: FircResult | null; error: string | null }> {
   try {
+    const FREECURRENCY_API_KEY = process.env.FREECURRENCY_API_KEY || 'fca_live_kKJhVpXCQYJEOWhsFSQNXM3fvoXQaPbn0S3BSzT0';
+
     const extractedData = await extractFiraData({ firaDataUri });
 
     if (extractedData.error) {
@@ -56,18 +56,22 @@ export async function analyzeFira({
     const A = extractedData.foreignCurrencyAmount;
     const C = extractedData.inrCredited;
     const D = midMarketRate;
+    const bankFxRate = extractedData.bankFxRate;
 
     if (A === 0) {
       return { data: null, error: 'Foreign currency amount cannot be zero.' };
     }
-
-    // Use the extracted bankFxRate directly for calculations
-    const spread = D - extractedData.bankFxRate;
+    
+    // CRITICAL CALCULATION: Use the extracted bankFxRate directly for calculations
+    // to ensure accuracy and avoid rounding drift from re-deriving the rate.
+    // spread = midMarketRate - bankFxRate
+    // hiddenCost = spread * foreignCurrencyAmount
+    const spread = D - bankFxRate;
     const hiddenCost = spread * A;
     const paisePerUnit = spread * 100;
     const basisPoints = (spread / D) * 10000;
 
-    // For display purposes, the 'effective' rate is still what the user actually received.
+    // For display purposes, the 'effective' rate is what the user actually received.
     const effectiveBankRate = C / A;
 
     const result: FircResult = {
@@ -76,7 +80,7 @@ export async function analyzeFira({
         purposeCode: extractedData.purposeCode || 'N/A',
         foreignCurrencyCode: extractedData.foreignCurrencyCode,
         foreignCurrencyAmount: A,
-        bankRate: extractedData.bankFxRate,
+        bankRate: bankFxRate,
         inrCredited: C,
         midMarketRate: D,
         effectiveBankRate: effectiveBankRate,
