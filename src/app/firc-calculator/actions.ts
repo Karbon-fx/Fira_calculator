@@ -35,7 +35,7 @@ export async function analyzeFira({
     if (!extractedData.transactionDate || !extractedData.foreignCurrencyAmount || !extractedData.inrCredited || !extractedData.foreignCurrencyCode || !extractedData.bankFxRate) {
         return { data: null, error: 'OCR failed to extract all required data. Please try another document or a clearer image.' };
     }
-    
+
     const fxApiUrl = `https://api.freecurrencyapi.com/v1/historical?apikey=${FREECURRENCY_API_KEY}&date=${extractedData.transactionDate}&base_currency=${extractedData.foreignCurrencyCode}&currencies=INR`;
     
     const fxResponse = await fetch(fxApiUrl);
