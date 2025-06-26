@@ -393,10 +393,10 @@ export function ResultsCard({
         
         {activeTab === 'totalCost' && (
           <div className="w-full bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
-            <span className="font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
+            <span className="font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
               Effective Total Cost
             </span>
-            <span className="flex items-center gap-1.5 font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
+            <span className="flex items-center gap-1.5 font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
               {formatNumber(data.hiddenCost, 'INR')}
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
@@ -417,10 +417,10 @@ export function ResultsCard({
 
         {activeTab === 'paise' && (
           <div className="w-full bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
-            <span className="font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
+            <span className="font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
               Effective FX spread in INR
             </span>
-            <span className="flex items-center gap-1.5 font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
+            <span className="flex items-center gap-1.5 font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
               {formatNumber(data.spread, 'INR')}
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
@@ -441,10 +441,10 @@ export function ResultsCard({
 
         {activeTab === 'bps' && (
           <div className="w-full bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
-            <span className="font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
+            <span className="font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
               Eff. FX spread in bps
             </span>
-            <span className="flex items-center gap-1.5 font-sans font-medium text-base leading-[18px] text-black tracking-[-0.16px]">
+            <span className="flex items-center gap-1.5 font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
               {formatNumber(data.basisPoints, undefined, 5)} bps
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
@@ -513,7 +513,7 @@ function DetailRow({
       <p className="font-sans font-semibold text-sm leading-5 text-[#6A7280]">
         {label}
       </p>
-      <div className="font-sans font-medium text-sm leading-5 text-[#1F1F1F] text-right">
+      <div className="font-sans font-bold text-sm leading-5 text-[#1F1F1F] text-right">
         {value}
       </div>
     </div>
