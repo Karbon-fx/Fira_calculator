@@ -24,7 +24,7 @@ export default function RootLayout({
           {`
             const initJotform = () => {
               if (typeof JotformFeedback !== 'undefined') {
-                new JotformFeedback({
+                window.JFL_251765324497062 = new JotformFeedback({
                   formId: '251765324497062',
                   base: 'https://form.jotform.com/',
                   windowTitle: '',
