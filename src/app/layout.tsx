@@ -27,12 +27,12 @@ export default function RootLayout({
                 new JotformFeedback({
                   formId: '251765324497062',
                   base: 'https://form.jotform.com/',
-                  windowTitle: 'Get in Touch',
+                  windowTitle: '',
                   backgroundColor: '#0e4c96',
                   fontColor: '#FFFFFF',
                   type: 'lightbox',
-                  height: 500,
-                  width: 700,
+                  height: 690,
+                  width: 600,
                   openOnLoad: false
                 });
               } else {
