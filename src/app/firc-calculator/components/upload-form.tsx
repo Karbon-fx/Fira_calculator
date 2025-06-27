@@ -6,6 +6,37 @@ import { cn } from '@/lib/utils';
 import { z } from 'zod';
 import type { ErrorKey } from '../error-definitions';
 
+const FiraDocumentIcon = () => (
+  <svg width="126" height="139" viewBox="0 0 126 139" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g filter="url(#filter0_d_10598_32091)">
+      <path d="M6.96387 6V125.5L17.5973 119.525L28.2308 125.5L38.8643 119.525L49.4978 125.5L60.1312 119.525L70.7647 125.5L81.3982 119.525L92.0317 125.5V6L81.3982 11.975L70.7647 6L60.1312 11.975L49.4978 6L38.8643 11.975L28.2308 6L17.5973 11.975L6.96387 6Z" fill="white"/>
+      <path d="M71.7761 32.3301H27.2168Z" fill="white"/>
+      <path d="M71.7761 32.3301H27.2168" stroke="#0657D0" strokeWidth="2.24062" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M71.1036 48.5332H27.8945Z" fill="white"/>
+      <path d="M71.1036 48.5332H27.8945" stroke="#0657D0" strokeWidth="2.24062" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M71.7761 64.7383H27.2168Z" fill="white"/>
+      <path d="M71.7761 64.7383H27.2168" stroke="#0657D0" strokeWidth="2.24062" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M48.8239 80.9414H27.8945Z" fill="white"/>
+      <path d="M48.8239 80.9414H27.8945" stroke="#0657D0" strokeWidth="2.24062" strokeLinecap="round" strokeLinejoin="round"/>
+    </g>
+    <rect x="65.9307" y="79.1934" width="59.75" height="59.75" rx="29.875" fill="#0657D0"/>
+    <path d="M109.249 113.55V119.525C109.249 120.317 108.934 121.077 108.374 121.637C107.814 122.198 107.054 122.513 106.261 122.513H85.3488C84.5565 122.513 83.7966 122.198 83.2363 121.637C82.6761 121.077 82.3613 120.317 82.3613 119.525V113.55M103.274 103.094L95.8051 95.625M95.8051 95.625L88.3363 103.094M95.8051 95.625L95.8051 113.55" stroke="white" strokeWidth="1.74271" strokeLinecap="round" strokeLinejoin="round"/>
+    <defs>
+      <filter id="filter0_d_10598_32091" x="0.988867" y="0.0250001" width="97.0184" height="131.45" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+        <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feOffset/>
+        <feGaussianBlur stdDeviation="2.9875"/>
+        <feComposite in2="hardAlpha" operator="out"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_10598_32091"/>
+        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_10598_32091" result="shape"/>
+      </filter>
+    </defs>
+  </svg>
+);
+
+
 // Figma: Upload Icon for Dropzone
 const UploadIcon = ({ className }: { className?: string }) => (
   <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
@@ -103,11 +134,11 @@ export function UploadForm({ onFileSelect, onValidationError }: {
     <>
       <div className="w-[450px] bg-white border border-[#F0F0F0] rounded-[16px] py-[32px] px-[32px] flex flex-col items-center gap-4">
 
-        <div className="w-[386px] pt-4">
-          <h1 className="font-sans text-[16px] leading-[18px] font-bold text-center text-[#0A1F44]">
+        <FiraDocumentIcon />
+
+        <h1 className="w-[386px] font-sans text-[16px] leading-[18px] font-bold text-center text-[#0A1F44]">
             Upload your FIRA (Foreign Inward Remittance Advice) to get a detailed breakdown of your actual costs.
-          </h1>
-        </div>
+        </h1>
         
         <div
           className={cn(
