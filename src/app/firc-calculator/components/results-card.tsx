@@ -256,6 +256,12 @@ export function ResultsCard({
       });
   };
 
+  const handleContactClick = () => {
+    if (typeof window !== 'undefined' && (window as any).JFL_251765324497062) {
+      (window as any).JFL_251765324497062.open();
+    }
+  };
+
   const tabContent = {
     totalCost: {
       value: `${formatNumber(data.hiddenCost, 'INR')}`,
@@ -474,12 +480,10 @@ export function ResultsCard({
             Need better pricing that is simple & transparent?
           </p>
           <Button
-            asChild
+            onClick={handleContactClick}
             className="w-full h-10 bg-[#145AFF] rounded-lg py-3 px-4 font-sans font-semibold text-sm leading-4 text-white hover:bg-[#145AFF]/90"
           >
-            <a className="lightbox-251765324497062">
-              Get in Touch
-            </a>
+            Get in Touch
           </Button>
           <div className="w-full flex justify-between items-center">
             <button
