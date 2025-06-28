@@ -33,7 +33,8 @@ export async function analyzeFira({
       return { data: null, error: 'EXTRACTION_FAILED' };
     }
 
-    if (!extractedData.transactionDate || !extractedData.foreignCurrencyAmount || !extractedData.inrCredited || !extractedData.foreignCurrencyCode || !extractedData.bankFxRate) {
+    // Check for essential extracted data. bankFxRate is now optional.
+    if (!extractedData.transactionDate || !extractedData.foreignCurrencyAmount || !extractedData.inrCredited || !extractedData.foreignCurrencyCode) {
         return { data: null, error: 'EXTRACTION_FAILED' };
     }
 
@@ -55,15 +56,26 @@ export async function analyzeFira({
     const A = extractedData.foreignCurrencyAmount;
     const C = extractedData.inrCredited;
     const D = midMarketRate;
-    const bankFxRate = extractedData.bankFxRate;
 
+    // Ensure foreign currency amount is not zero to prevent division errors.
     if (A === 0) {
       return { data: null, error: 'EXTRACTION_FAILED' };
     }
     
-    // CRITICAL CALCULATION: Use the extracted bankFxRate and full-precision spread
-    // to ensure accuracy and avoid rounding drift from re-deriving the rate.
-    const spread = D - bankFxRate;
+    // Backend Developer Change: Calculate bank's FX rate if not provided in the FIRA.
+    // This logic handles cases where the bank's FX rate is missing from the document.
+    let finalBankFxRate: number;
+    if (extractedData.bankFxRate && extractedData.bankFxRate > 0) {
+      // Use the FX rate from the FIRA if it exists.
+      finalBankFxRate = extractedData.bankFxRate;
+    } else {
+      // If bankFxRate is missing, calculate it by dividing INR credited by the foreign currency amount.
+      finalBankFxRate = C / A;
+    }
+
+    // CRITICAL CALCULATION: Use the finalBankFxRate (either from FIRA or calculated)
+    // to ensure accuracy and avoid rounding drift.
+    const spread = D - finalBankFxRate;
     const hiddenCost = spread * A;
     const paisePerUnit = spread * 100;
     const basisPoints = (spread / D) * 10000;
@@ -77,7 +89,7 @@ export async function analyzeFira({
         purposeCode: extractedData.purposeCode || 'N/A',
         foreignCurrencyCode: extractedData.foreignCurrencyCode,
         foreignCurrencyAmount: A,
-        bankRate: bankFxRate,
+        bankRate: finalBankFxRate, // Use the determined final rate.
         inrCredited: C,
         midMarketRate: D,
         effectiveBankRate: effectiveBankRate,
