@@ -1,6 +1,6 @@
 'use server';
 
-import { extractFiraData } from '@/ai/flows/extract-fira-data';
+import type { ExtractFiraDataOutput } from '@/ai/flows/extract-fira-data';
 import type { ErrorKey } from './error-definitions';
 
 export interface FircResult {
@@ -19,19 +19,13 @@ export interface FircResult {
   basisPoints: number;
 }
 
-export async function analyzeFira({
-  firaDataUri,
+export async function calculateFircResult({
+  extractedData,
 }: {
-  firaDataUri: string;
+  extractedData: ExtractFiraDataOutput;
 }): Promise<{ data: FircResult | null; error: ErrorKey | null }> {
   try {
     const FREECURRENCY_API_KEY = process.env.FREECURRENCY_API_KEY || 'fca_live_kKJhVpXCQYJEOWhsFSQNXM3fvoXQaPbn0S3BSzT0';
-
-    const extractedData = await extractFiraData({ firaDataUri });
-
-    if (extractedData.error) {
-      return { data: null, error: 'EXTRACTION_FAILED' };
-    }
 
     // Check for essential extracted data. bankFxRate is now optional.
     if (!extractedData.transactionDate || !extractedData.foreignCurrencyAmount || !extractedData.inrCredited || !extractedData.foreignCurrencyCode) {

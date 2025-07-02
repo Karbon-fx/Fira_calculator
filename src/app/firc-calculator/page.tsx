@@ -5,7 +5,8 @@ import { UploadForm } from './components/upload-form';
 import { ResultsCard } from './components/results-card';
 import { LoadingCard } from './components/loading-card';
 import { ErrorCard } from './components/error-card';
-import { analyzeFira } from './actions';
+import { calculateFircResult } from './actions';
+import { extractFiraData } from '@/ai/flows/extract-fira-data';
 import type { FircResult } from './actions';
 import type { ErrorKey } from './error-definitions';
 
@@ -39,7 +40,19 @@ export default function FircCalculatorPage() {
         await new Promise((resolve) => setTimeout(resolve, 800));
 
         setLoadingMessage('Extracting details from your FIRA...');
-        const result = await analyzeFira({ firaDataUri: dataUri });
+        const extractedData = await extractFiraData({ firaDataUri: dataUri });
+        
+        if (extractedData.error) {
+            setErrorKey('EXTRACTION_FAILED');
+            setView('error');
+            return;
+        }
+
+        // Artificial delay to ensure "Calculating..." message is visible
+        setLoadingMessage('Calculating Cost...');
+        await new Promise((resolve) => setTimeout(resolve, 800));
+
+        const result = await calculateFircResult({ extractedData });
 
         if (result.error) {
           setErrorKey(result.error);
@@ -53,7 +66,13 @@ export default function FircCalculatorPage() {
         }
       } catch (e: any) {
         console.error(e);
-        setErrorKey('UNKNOWN_ERROR');
+        let effectiveError: ErrorKey = 'UNKNOWN_ERROR';
+        if (e instanceof Error) {
+            if (e.message.includes('deadline')) {
+                effectiveError = 'TIMEOUT_ERROR';
+            }
+        }
+        setErrorKey(effectiveError);
         setView('error');
       }
     };
