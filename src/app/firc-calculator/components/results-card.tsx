@@ -306,7 +306,7 @@ export function ResultsCard({
               aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex-1 flex flex-row justify-center items-center h-10 font-sans text-sm leading-5 font-semibold transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
+                'flex-1 flex flex-row justify-center items-center h-10 font-sans text-sm leading-5 font-bold transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
                 activeTab === tab.id
                   ? 'bg-[#0657D0] text-white rounded-[4px]'
                   : 'bg-white text-[#64748B] hover:bg-slate-100 rounded-[4px]'
