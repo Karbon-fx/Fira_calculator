@@ -238,7 +238,7 @@ export function UploadForm({
       </div>
       <div className="w-full flex items-start gap-1.5 p-[16px_12px] rounded-[12px]">
         <InfoIcon />
-        <p className="font-sans text-[12px] leading-[16px] font-normal text-[#000000] flex-1">
+        <p className="font-sans text-[12px] leading-[16px] font-bold text-[#000000] flex-1">
           By uploading, you agree to our use of the document to provide a cost
           breakdown and contact you about savings. Please redact sensitive
           details like bank account numbers before submission.
