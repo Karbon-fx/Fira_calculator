@@ -429,27 +429,27 @@ export function ResultsCard({
         )}
 
         {activeTab === 'paise' && (
-          <div className="w-full bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
-            <span className="font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
-              Effective FX spread in INR
-            </span>
-            <span className="flex items-center gap-1.5 font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
-              {formatNumber(data.spread, 'INR')}
-              <Tooltip delayDuration={100}>
-                <TooltipTrigger asChild>
-                  <button
-                    aria-label="More info about Effective FX spread"
-                    className="flex items-center justify-center"
-                  >
-                    <InfoIcon />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent className="bg-transparent border-none p-0 shadow-none">
-                  <SpreadTooltipContent data={data} />
-                </TooltipContent>
-              </Tooltip>
-            </span>
-          </div>
+           <div className="w-full bg-white rounded-xl p-4 flex justify-between items-center self-stretch">
+             <span className="font-sans font-medium text-sm text-black">
+               Effective FX spread in INR
+             </span>
+             <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
+               {formatNumber(data.spread, 'INR')}
+               <Tooltip delayDuration={100}>
+                 <TooltipTrigger asChild>
+                   <button
+                     aria-label="More info about Effective FX spread"
+                     className="flex items-center justify-center"
+                   >
+                     <InfoIcon />
+                   </button>
+                 </TooltipTrigger>
+                 <TooltipContent className="bg-transparent border-none p-0 shadow-none">
+                   <SpreadTooltipContent data={data} />
+                 </TooltipContent>
+               </Tooltip>
+             </span>
+           </div>
         )}
 
         {activeTab === 'bps' && (
