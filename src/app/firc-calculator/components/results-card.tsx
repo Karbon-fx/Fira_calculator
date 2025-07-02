@@ -453,7 +453,7 @@ export function ResultsCard({
         )}
 
         {activeTab === 'bps' && (
-          <div className="w-full bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
+          <div className="w-full bg-white rounded-xl py-6 px-4 flex justify-between items-center self-stretch">
             <span className="font-sans font-medium text-sm text-black">
               Eff. FX spread in bps
             </span>
