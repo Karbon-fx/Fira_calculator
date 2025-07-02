@@ -35,6 +35,9 @@ export default function FircCalculatorPage() {
           throw new Error('Could not read file.');
         }
 
+        // Artificial delay to ensure "Uploading..." message is visible
+        await new Promise((resolve) => setTimeout(resolve, 800));
+
         setLoadingMessage('Extracting details from your FIRA...');
         const result = await analyzeFira({ firaDataUri: dataUri });
 
