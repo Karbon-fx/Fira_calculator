@@ -6,85 +6,36 @@ import { cn } from '@/lib/utils';
 import { z } from 'zod';
 import type { ErrorKey } from '../error-definitions';
 
-const FiraDocumentIcon = () => (
-  <div
-    className="relative w-[85.07px] h-[119.5px]"
-    style={{ filter: 'drop-shadow(0px 0px 5.975px rgba(0, 0, 0, 0.25))' }}
-  >
-    <svg
-      className="absolute"
-      width="86"
-      height="120"
-      viewBox="0 0 86 120"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M0.5 0V119.5L11.1335 113.525L21.767 119.5L32.4005 113.525L43.034 119.5L53.6675 113.525L64.301 119.5L74.9345 113.525L85.568 119.5V0L74.9345 5.975L64.301 0L53.6675 5.975L43.034 0L32.4005 5.975L21.767 0L11.1335 5.975L0.5 0Z"
-        fill="white"
-      />
-      <path
-        d="M65.3122 26.3301H20.7529"
-        stroke="#0657D0"
-        strokeWidth="2.24062"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M64.6397 42.5332H21.4307"
-        stroke="#0657D0"
-        strokeWidth="2.24062"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M65.3122 58.7383H20.7529"
-        stroke="#0657D0"
-        strokeWidth="2.24062"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M42.3599 74.9414H21.4307"
-        stroke="#0657D0"
-        strokeWidth="2.24062"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+const FiraUploadIcon = () => (
+    <svg width="125" height="140" viewBox="0 0 125 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g filter="url(#filter0_d_10737_10820)">
+            <path d="M5.96533 6.25V125.75L16.5988 119.775L27.2323 125.75L37.8658 119.775L48.4992 125.75L59.1327 119.775L69.7662 125.75L80.3997 119.775L91.0331 125.75V6.25L80.3997 12.225L69.7662 6.25L59.1327 12.225L48.4992 6.25L37.8658 12.225L27.2323 6.25L16.5988 12.225L5.96533 6.25Z" fill="white"/>
+            <path d="M70.7776 32.582H26.2183H70.7776Z" fill="white"/>
+            <path d="M70.7776 32.582H26.2183" stroke="#0657D0" strokeWidth="2.24062" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M70.1041 48.7852H26.895H70.1041Z" fill="white"/>
+            <path d="M70.1041 48.7852H26.895" stroke="#0657D0" strokeWidth="2.24062" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M70.7776 64.9883H26.2183H70.7776Z" fill="white"/>
+            <path d="M70.7776 64.9883H26.2183" stroke="#0657D0" strokeWidth="2.24062" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M47.8244 81.1914H26.895H47.8244Z" fill="white"/>
+            <path d="M47.8244 81.1914H26.895" stroke="#0657D0" strokeWidth="2.24062" strokeLinecap="round" strokeLinejoin="round"/>
+        </g>
+        <rect x="64.9307" y="79.4453" width="59.75" height="59.75" rx="29.875" fill="#0657D0"/>
+        <path d="M108.249 113.8V119.775C108.249 120.567 107.934 121.327 107.374 121.887C106.814 122.448 106.054 122.763 105.261 122.763H84.3488C83.5565 122.763 82.7966 122.448 82.2363 121.887C81.6761 121.327 81.3613 120.567 81.3613 119.775V113.8M102.274 103.344L94.8051 95.875M94.8051 95.875L87.3363 103.344M94.8051 95.875L94.8051 113.8" stroke="white" strokeWidth="1.74271" strokeLinecap="round" strokeLinejoin="round"/>
+        <defs>
+        <filter id="filter0_d_10737_10820" x="-0.00966787" y="0.275" width="97.0184" height="131.45" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+            <feOffset/>
+            <feGaussianBlur stdDeviation="2.9875"/>
+            <feComposite in2="hardAlpha" operator="out"/>
+            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_10737_10820"/>
+            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_10737_10820" result="shape"/>
+        </filter>
+        </defs>
     </svg>
-    <div className="absolute w-[59.75px] h-[59.75px] left-[50%] top-[73.2px] -translate-x-1/2 bg-[#0657D0] rounded-full flex items-center justify-center">
-      <svg
-        width="27"
-        height="27"
-        viewBox="0 0 27 27"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M19.7291 10.375L13.4999 4.14583L7.27071 10.375"
-          stroke="white"
-          strokeWidth="1.74271"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M13.5 4.14583V20.625"
-          stroke="white"
-          strokeWidth="1.74271"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M24.875 17.5V26C24.875 26.7417 24.6165 27.4207 24.1601 27.9103C23.7037 28.3998 23.076 28.6667 22.4167 28.6667H4.58333C3.92396 28.6667 3.29628 28.3998 2.8399 27.9103C2.38351 27.4207 2.125 26.7417 2.125 26V17.5"
-          stroke="white"
-          strokeWidth="1.74271"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </div>
-  </div>
 );
+
 
 const UploadIcon = ({ className }: { className?: string }) => (
   <svg
@@ -228,9 +179,13 @@ export function UploadForm({
   };
 
   return (
-    <div className="w-[450px] h-[806px] bg-[#F5F8FF] border border-[#F0F0F0] rounded-[16px] p-[48px_24px] flex flex-col justify-center items-center gap-6">
-      <div className="flex flex-col items-center gap-9 self-stretch">
-        <FiraDocumentIcon />
+    <div className="w-[450px] h-[749px] bg-[#F5F8FF] border border-[#F0F0F0] rounded-[16px] p-[48px_24px] flex flex-col justify-center items-center gap-6">
+      <div className="flex flex-col items-center gap-6 self-stretch">
+        <FiraUploadIcon />
+        <p className="text-xl font-bold text-center text-[#0A1F44] leading-tight max-w-sm">
+          Upload your FIRA (Foreign Inward Remittance Advice) to get a detailed
+          breakdown of your actual costs.
+        </p>
         <div
           className={cn(
             'w-full h-[240px] flex flex-col items-center justify-center gap-4 bg-white border border-dashed border-[#0657D0] rounded-[8px] transition-colors duration-200 cursor-pointer p-6',
