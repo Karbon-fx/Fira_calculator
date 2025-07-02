@@ -346,21 +346,24 @@ export function ResultsCard({
               value={format(new Date(data.transactionDate), 'MMM dd, yyyy')}
               bold={true}
             />
-            <DetailRow label="Purpose code" value={data.purposeCode} />
+            <DetailRow label="Purpose code" value={data.purposeCode} bold={true} />
             <DetailRow
               label={`${data.foreignCurrencyCode} Amount`}
               value={`${formatNumber(
                 data.foreignCurrencyAmount,
                 data.foreignCurrencyCode
               )}`}
+              bold={true}
             />
             <DetailRow
               label="User FX rate on FIRA"
               value={`${formatNumber(data.bankRate, 'INR', 2)}`}
+              bold={true}
             />
             <DetailRow
               label="INR after FX"
               value={formatNumber(data.inrCredited, 'INR')}
+              bold={true}
             />
           </div>
         </div>
@@ -378,6 +381,7 @@ export function ResultsCard({
                 'MMM dd, yyyy'
               )}`}
               value={`${formatNumber(data.midMarketRate, 'INR', 2)}`}
+              bold={true}
             />
             {activeTab !== 'paise' && (
               <DetailRow
@@ -400,6 +404,7 @@ export function ResultsCard({
                     </Tooltip>
                   </span>
                 }
+                bold={true}
               />
             )}
           </div>
