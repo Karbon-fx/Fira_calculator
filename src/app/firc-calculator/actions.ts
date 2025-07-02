@@ -71,7 +71,7 @@ export async function calculateFircResult({
     // to ensure accuracy and avoid rounding drift.
     const spread = D - finalBankFxRate;
     const hiddenCost = spread * A;
-    const paisePerUnit = spread * 100;
+    const paisePerUnit = spread;
     const basisPoints = (spread / D) * 10000;
 
     // For display purposes, the 'effective' rate is what the user actually received.
