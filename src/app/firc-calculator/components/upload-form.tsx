@@ -38,28 +38,8 @@ const FiraUploadIcon = () => (
 
 
 const UploadIcon = ({ className }: { className?: string }) => (
-  <svg
-    width="38"
-    height="38"
-    viewBox="0 0 38 38"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className={className}
-  >
-    <path
-      d="M25.3337 16.8333L19.0003 10.5L12.667 16.8333"
-      stroke="#0657D0"
-      strokeWidth="2.375"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M19 10.5V25.3333"
-      stroke="#0657D0"
-      strokeWidth="2.375"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
+  <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <path d="M18.0756 25.4453V11.9078L13.9193 16.0641L11.9006 14.0453L19.5006 6.44531L27.1006 14.0453L25.0818 16.0641L20.9256 11.9078V25.4453H18.0756ZM10.9395 31.1453C10.1552 31.1453 9.486 30.8662 8.93184 30.3081C8.37767 29.75 8.10059 29.0791 8.10059 28.2953V25.4453H10.9506V28.2953H28.0506V25.4453H30.9006V28.2953C30.9006 29.0791 30.6214 29.75 30.063 30.3081C29.5046 30.8662 28.8333 31.1453 28.049 31.1453H10.9395Z" fill="#0657D0"/>
   </svg>
 );
 
@@ -182,7 +162,7 @@ export function UploadForm({
     <div className="w-[450px] h-[749px] bg-[#F5F8FF] border border-[#F0F0F0] rounded-[16px] p-[48px_24px] flex flex-col justify-center items-center gap-6">
       <div className="flex flex-col items-center gap-6 self-stretch">
         <FiraUploadIcon />
-        <p className="w-full h-[42px] font-bold text-base leading-4 text-center text-[#0A1F44] flex items-center justify-center">
+        <p className="w-[402px] h-[42px] font-bold text-base leading-4 text-center text-[#0A1F44] flex items-center justify-center">
           Upload your FIRA (Foreign Inward Remittance Advice) to get a detailed
           breakdown of your actual costs.
         </p>
