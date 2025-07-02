@@ -281,7 +281,7 @@ export function ResultsCard({
       )}`,
     },
     bps: {
-      value: `${formatNumber(data.basisPoints, undefined, 5)} bps`,
+      value: `${formatNumber(data.basisPoints, undefined, 2)} bps`,
       description: `on the mid-market rate of ${formatNumber(
         data.midMarketRate,
         'INR',
@@ -306,7 +306,7 @@ export function ResultsCard({
               aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex-1 flex flex-row justify-center items-center h-10 font-sans text-sm leading-5 font-medium transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
+                'flex-1 flex flex-row justify-center items-center h-10 font-sans text-sm leading-5 font-semibold transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
                 activeTab === tab.id
                   ? 'bg-[#0657D0] text-white rounded-[4px]'
                   : 'bg-white text-[#64748B] hover:bg-slate-100 rounded-[4px]'
@@ -321,13 +321,13 @@ export function ResultsCard({
           id={`tabpanel-${activeTab}`}
           role="tabpanel"
           aria-labelledby={`tab-${activeTab}`}
-          className="w-full border border-[#E4E4E7] rounded-xl flex flex-col items-start justify-center p-3 gap-2 self-stretch"
+          className="w-full border-[1.84px] border-[#E4E4E7] rounded-xl flex flex-col items-start justify-center p-3 gap-2 self-stretch"
         >
           <p className="font-semibold text-base leading-7 text-[#0A1F44]">
             {data.bankName} has charged you
           </p>
           <div className="flex flex-col items-start gap-1">
-            <p className="font-semibold text-3xl leading-9 tracking-tight text-black">
+            <p className="font-semibold text-3xl leading-9 tracking-[-0.025em] text-black">
               {tabContent.value}
             </p>
             <p className="font-normal text-sm leading-5 text-[#0A1F44]">
@@ -412,7 +412,7 @@ export function ResultsCard({
 
         {activeTab === 'totalCost' && (
           <div className="w-full bg-white rounded-xl py-6 px-4 flex justify-between items-center self-stretch">
-            <span className="font-sans font-semibold text-sm text-black">
+            <span className="font-semibold text-sm text-black">
               Effective Total Cost
             </span>
             <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
@@ -436,7 +436,7 @@ export function ResultsCard({
 
         {activeTab === 'paise' && (
            <div className="w-full bg-white rounded-xl p-6 flex justify-between items-center self-stretch">
-             <span className="font-sans font-semibold text-sm text-black">
+             <span className="font-semibold text-sm text-black">
                Effective FX spread in INR
              </span>
              <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
@@ -460,11 +460,11 @@ export function ResultsCard({
 
         {activeTab === 'bps' && (
           <div className="w-full bg-white rounded-xl py-6 px-4 flex justify-between items-center self-stretch">
-            <span className="font-sans font-semibold text-sm text-black">
+            <span className="font-semibold text-sm text-black">
               Eff. FX spread in bps
             </span>
             <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
-              {formatNumber(data.basisPoints, undefined, 5)} bps
+              {formatNumber(data.basisPoints, undefined, 2)} bps
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
                   <button
