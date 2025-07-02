@@ -483,7 +483,7 @@ export function ResultsCard({
         )}
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-sans font-medium text-sm leading-5 text-[#1F1F1F]">
+          <p className="font-sans font-semibold text-sm leading-5 text-[#1F1F1F]">
             Need better pricing that is simple & transparent?
           </p>
           <Button
