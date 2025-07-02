@@ -412,7 +412,7 @@ export function ResultsCard({
 
         {activeTab === 'totalCost' && (
           <div className="w-full bg-white rounded-xl py-6 px-4 flex justify-between items-center self-stretch">
-            <span className="font-sans font-medium text-sm text-black">
+            <span className="font-sans font-semibold text-sm text-black">
               Effective Total Cost
             </span>
             <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
@@ -436,7 +436,7 @@ export function ResultsCard({
 
         {activeTab === 'paise' && (
            <div className="w-full bg-white rounded-xl p-6 flex justify-between items-center self-stretch">
-             <span className="font-sans font-medium text-sm text-black">
+             <span className="font-sans font-semibold text-sm text-black">
                Effective FX spread in INR
              </span>
              <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
@@ -460,7 +460,7 @@ export function ResultsCard({
 
         {activeTab === 'bps' && (
           <div className="w-full bg-white rounded-xl py-6 px-4 flex justify-between items-center self-stretch">
-            <span className="font-sans font-medium text-sm text-black">
+            <span className="font-sans font-semibold text-sm text-black">
               Eff. FX spread in bps
             </span>
             <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
