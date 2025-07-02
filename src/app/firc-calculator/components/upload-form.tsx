@@ -182,7 +182,7 @@ export function UploadForm({
     <div className="w-[450px] h-[749px] bg-[#F5F8FF] border border-[#F0F0F0] rounded-[16px] p-[48px_24px] flex flex-col justify-center items-center gap-6">
       <div className="flex flex-col items-center gap-6 self-stretch">
         <FiraUploadIcon />
-        <p className="text-xl font-bold text-center text-[#0A1F44] leading-tight max-w-sm">
+        <p className="text-base font-medium text-center text-[#0A1F44] leading-4 max-w-sm">
           Upload your FIRA (Foreign Inward Remittance Advice) to get a detailed
           breakdown of your actual costs.
         </p>
