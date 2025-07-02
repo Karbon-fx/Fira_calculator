@@ -15,6 +15,7 @@ export default function FircCalculatorPage() {
   const [view, setView] = useState<View>('upload');
   const [resultData, setResultData] = useState<FircResult | null>(null);
   const [errorKey, setErrorKey] = useState<ErrorKey | null>(null);
+  const [loadingMessage, setLoadingMessage] = useState<string>('Uploading...');
 
   const handleValidationError = (key: ErrorKey) => {
     setErrorKey(key);
@@ -22,6 +23,7 @@ export default function FircCalculatorPage() {
   };
 
   const handleFileSelect = async (file: File) => {
+    setLoadingMessage('Uploading...');
     setView('loading');
 
     const reader = new FileReader();
@@ -33,6 +35,7 @@ export default function FircCalculatorPage() {
           throw new Error('Could not read file.');
         }
 
+        setLoadingMessage('Extracting details from your FIRA...');
         const result = await analyzeFira({ firaDataUri: dataUri });
 
         if (result.error) {
@@ -66,7 +69,7 @@ export default function FircCalculatorPage() {
   const renderContent = () => {
     switch (view) {
       case 'loading':
-        return <LoadingCard />;
+        return <LoadingCard message={loadingMessage} />;
       case 'result':
         return (
           <ResultsCard

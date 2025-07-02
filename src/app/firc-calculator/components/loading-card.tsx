@@ -16,7 +16,7 @@ const SpinnerGapIcon = ({ className }: { className?: string }) => (
 );
 
 
-export function LoadingCard() {
+export function LoadingCard({ message = 'Loading...' }: { message?: string }) {
   return (
     <div
       className={cn(
@@ -25,13 +25,13 @@ export function LoadingCard() {
     >
       <div
         role="status"
-        className="flex flex-col justify-center items-center gap-3 w-[204px] h-[204px] rounded-[16.32px]"
+        className="flex flex-col justify-center items-center gap-3 w-[356px] h-[204px] rounded-[16.32px]"
       >
         <SpinnerGapIcon className="w-[48.96px] h-[48.96px] animate-spin" />
-        <p className="font-sans font-normal text-[24px] leading-8 text-center tracking-tight text-black">
-          Uploading...
+        <p className="font-sans font-normal text-[24px] leading-8 text-center tracking-[-0.025em] text-black">
+          {message}
         </p>
-        <span className="sr-only">Uploading...</span>
+        <span className="sr-only">{message}</span>
       </div>
     </div>
   );
