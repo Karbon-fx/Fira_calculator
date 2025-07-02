@@ -22,7 +22,7 @@ const FiraUploadIcon = () => (
         <rect x="64.9307" y="79.4453" width="59.75" height="59.75" rx="29.875" fill="#0657D0"/>
         <path d="M108.249 113.8V119.775C108.249 120.567 107.934 121.327 107.374 121.887C106.814 122.448 106.054 122.763 105.261 122.763H84.3488C83.5565 122.763 82.7966 122.448 82.2363 121.887C81.6761 121.327 81.3613 120.567 81.3613 119.775V113.8M102.274 103.344L94.8051 95.875M94.8051 95.875L87.3363 103.344M94.8051 95.875L94.8051 113.8" stroke="white" strokeWidth="1.74271" strokeLinecap="round" strokeLinejoin="round"/>
         <defs>
-        <filter id="filter0_d_10737_10820" x="-0.00966787" y="0.275" width="97.0184" height="131.45" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <filter id="filter0_d_10737_10820" x="-0.00966787" y="0.275" width="97.0184" height="131.45" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
             <feFlood floodOpacity="0" result="BackgroundImageFix"/>
             <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
             <feOffset/>
