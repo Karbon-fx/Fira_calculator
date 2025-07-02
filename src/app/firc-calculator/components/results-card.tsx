@@ -51,6 +51,15 @@ const InfoIcon = () => (
   </svg>
 );
 
+const TooltipInfoIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 mt-0.5">
+        <path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="white" strokeOpacity="0.8" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8 10.4V8" stroke="white" strokeOpacity="0.8" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8 5.6H8.008" stroke="white" strokeOpacity="0.8" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
+
+
 const UploadAnotherIcon = () => (
   <svg
     width="16"
@@ -217,6 +226,11 @@ function BpsTooltipContent({ data }: { data: FircResult }) {
         label="Total FX Cost in bps"
         value={`${formatNumber(data.basisPoints, undefined, 5)} bps`}
       />
+      <div className="w-full border-b border-white/20 my-1"></div>
+      <div className="flex items-start gap-2 text-sm text-white/80 self-stretch w-full pt-1">
+          <TooltipInfoIcon />
+          <span>1 basis point (bps) = 0.01%. Shows exactly how much extra the bank charges.</span>
+      </div>
     </div>
   );
 }
