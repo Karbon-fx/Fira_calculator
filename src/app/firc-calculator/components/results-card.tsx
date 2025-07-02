@@ -25,6 +25,7 @@ const InfoIcon = () => (
     viewBox="0 0 17 21"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    className="w-[16.8px] h-[20.8px]"
   >
     <path
       d="M8.39999 15C12.266 15 15.4 11.866 15.4 8C15.4 4.13401 12.266 1 8.4 1C4.53401 1 1.40002 4.13401 1.40002 8C1.40002 11.866 4.53401 15 8.39999 15Z"
@@ -60,14 +61,14 @@ const UploadAnotherIcon = () => (
   >
     <path
       d="M8 12.6667V3.33333"
-      stroke="#145AFF"
+      stroke="#0657D0"
       strokeWidth="1.2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M10.6667 6L8 3.33333L5.33333 6"
-      stroke="#145AFF"
+      stroke="#0657D0"
       strokeWidth="1.2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -85,14 +86,14 @@ const CopyIcon = () => (
   >
     <path
       d="M11.3333 1.33331H4.66667C3.93028 1.33331 3.33333 1.93026 3.33333 2.66665V10.6666C3.33333 11.403 3.93028 12 4.66667 12H11.3333C12.0697 12 12.6667 11.403 12.6667 10.6666V2.66665C12.6667 1.93026 12.0697 1.33331 11.3333 1.33331Z"
-      stroke="#145AFF"
+      stroke="#0657D0"
       strokeWidth="1.2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M8.66669 12V13.3333C8.66669 14.0697 8.06974 14.6667 7.33335 14.6667H2.66669C1.93029 14.6667 1.33334 14.0697 1.33334 13.3333V5.33331C1.33334 4.59692 1.93029 3.99998 2.66669 3.99998H4.00002"
-      stroke="#145AFF"
+      stroke="#0657D0"
       strokeWidth="1.2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -291,11 +292,11 @@ export function ResultsCard({
 
   return (
     <TooltipProvider>
-      <div className="w-[450px] bg-white border border-[#F0F0F0] rounded-[16px] flex flex-col items-start p-[24px_16px] gap-4">
+      <div className="w-[450px] bg-[#F7FAFF] border border-[#E4E4E7] rounded-[16px] flex flex-col items-start p-6 gap-4">
         <div
           role="tablist"
           aria-label="Cost analysis tabs"
-          className="w-full p-1 bg-[#F1F5F9] rounded-[6px] flex flex-row items-center self-stretch gap-1"
+          className="w-full p-1 bg-white border border-[#E4E4E7] rounded-[6px] flex flex-row items-center self-stretch h-[48px] gap-1"
         >
           {tabs.map((tab) => (
             <button
@@ -305,10 +306,10 @@ export function ResultsCard({
               aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex-1 flex flex-row justify-center items-center h-8 font-sans text-sm leading-5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
+                'flex-1 flex flex-row justify-center items-center h-10 font-sans text-sm leading-5 font-medium transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
                 activeTab === tab.id
-                  ? 'bg-white text-[#0A1F44] rounded-[4px] shadow-sm font-bold'
-                  : 'bg-transparent text-[#6A7280] hover:bg-white/50 rounded-[4px] font-medium'
+                  ? 'bg-[#0657D0] text-white rounded-[4px]'
+                  : 'bg-white text-[#64748B] hover:bg-slate-100 rounded-[4px]'
               )}
             >
               {tab.label}
@@ -320,23 +321,23 @@ export function ResultsCard({
           id={`tabpanel-${activeTab}`}
           role="tabpanel"
           aria-labelledby={`tab-${activeTab}`}
-          className="w-full border border-[#EEF3F7] rounded-[12px] flex flex-col items-start justify-center p-[16px_12px] gap-[8px] self-stretch"
+          className="w-full border border-[#E4E4E7] rounded-xl flex flex-col items-start justify-center p-3 gap-2 self-stretch"
         >
-          <p className="font-sans font-bold text-[16px] leading-[18px] text-[#0A1F44] tracking-[-0.16px]">
-            <span className="font-semibold">{data.bankName} has charged you</span>
+          <p className="font-semibold text-base leading-7 text-[#0A1F44]">
+            {data.bankName} has charged you
           </p>
           <div className="flex flex-col items-start gap-1">
-            <p className="font-sans font-bold text-[28px] leading-[32px] tracking-[-0.56px] text-black">
+            <p className="font-semibold text-3xl leading-9 tracking-tight text-black">
               {tabContent.value}
             </p>
-            <p className="font-sans font-medium text-[14px] leading-[16px] tracking-[-0.14px] text-[#0A1F44]">
+            <p className="font-normal text-sm leading-5 text-[#0A1F44]">
               {tabContent.description}
             </p>
           </div>
         </div>
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-sans font-bold text-sm leading-5 text-[#1F1F1F]">
+          <p className="font-semibold text-base text-[#0F172A]">
             Information on FIRA
           </p>
           <div className="flex flex-col justify-center items-start gap-[6px] self-stretch">
@@ -363,10 +364,10 @@ export function ResultsCard({
           </div>
         </div>
 
-        <hr className="w-full border-t border-[#F0F0F0]" />
+        <hr className="w-full border-t border-[#E4E4E7]" />
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-sans font-bold text-sm leading-5 text-[#1F1F1F]">
+          <p className="font-semibold text-base text-[#0F172A]">
             Calculations
           </p>
           <div className="flex flex-col justify-center items-start gap-2 self-stretch w-full">
@@ -404,11 +405,11 @@ export function ResultsCard({
         </div>
 
         {activeTab === 'totalCost' && (
-          <div className="w-full bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
-            <span className="font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
+          <div className="w-full bg-white rounded-xl py-6 px-4 flex justify-between items-center self-stretch">
+            <span className="font-sans font-medium text-sm text-black">
               Effective Total Cost
             </span>
-            <span className="flex items-center gap-1.5 font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
+            <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
               {formatNumber(data.hiddenCost, 'INR')}
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
@@ -476,34 +477,34 @@ export function ResultsCard({
         )}
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-sans font-bold text-base leading-[18px] tracking-[-0.16px] text-[#1F1F1F]">
+          <p className="font-sans font-medium text-sm leading-5 text-[#1F1F1F]">
             Need better pricing that is simple & transparent?
           </p>
           <Button
             onClick={handleContactClick}
-            className="w-full h-10 bg-[#145AFF] rounded-lg py-3 px-4 font-sans font-semibold text-sm leading-4 text-white hover:bg-[#145AFF]/90"
+            className="w-full h-11 bg-[#0657D0] rounded-lg font-sans font-medium text-sm text-white hover:bg-[#0657D0]/90"
           >
             Get in Touch
           </Button>
           <div className="w-full flex justify-between items-center">
             <button
               onClick={handleCopy}
-              className="group flex items-center gap-1.5 text-[#145AFF] font-sans font-medium text-sm leading-5"
+              className="group flex items-center gap-1.5 text-[#0657D0] font-sans font-normal text-sm leading-5"
             >
               <CopyIcon />
-              <span className="relative py-1 font-medium">
-                Copy Result
-                <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#145AFF] transition-all duration-300 group-hover:w-full"></span>
+              <span className="relative py-1 font-normal">
+                Copy Links
+                <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#0657D0] transition-all duration-300 group-hover:w-full"></span>
               </span>
             </button>
             <button
-              className="group flex items-center gap-1.5 text-[#145AFF] font-sans font-medium text-sm leading-5 hover:bg-transparent"
+              className="group flex items-center gap-1.5 text-[#0657D0] font-sans font-normal text-sm leading-5 hover:bg-transparent"
               onClick={onUploadAnother}
             >
               <UploadAnotherIcon />
-              <span className="relative py-1 font-medium">
+              <span className="relative py-1 font-normal">
                 Upload Another FIRA
-                <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#145AFF] transition-all duration-300 group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#0657D0] transition-all duration-300 group-hover:w-full"></span>
               </span>
             </button>
           </div>
@@ -522,10 +523,10 @@ function DetailRow({
 }) {
   return (
     <div className="flex justify-between items-center py-1 gap-1 w-full h-7">
-      <p className="font-sans font-semibold text-sm leading-5 text-[#6A7280]">
+      <p className="font-sans font-normal text-sm leading-5 text-[#0F172A]">
         {label}
       </p>
-      <div className="font-sans font-bold text-sm leading-5 text-[#1F1F1F] text-right">
+      <div className="font-sans font-medium text-sm leading-5 text-[#0F172A] text-right">
         {value}
       </div>
     </div>
