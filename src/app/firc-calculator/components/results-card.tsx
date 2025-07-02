@@ -273,7 +273,7 @@ export function ResultsCard({
       )}`,
     },
     paise: {
-      value: `${formatNumber(data.spread, 'INR')}`,
+      value: `${formatNumber(data.paisePerUnit, 'INR')}`,
       description: `on the mid-market rate of ${formatNumber(
         data.midMarketRate,
         'INR',
@@ -344,6 +344,7 @@ export function ResultsCard({
             <DetailRow
               label="Date of transaction"
               value={format(new Date(data.transactionDate), 'MMM dd, yyyy')}
+              bold={true}
             />
             <DetailRow label="Purpose code" value={data.purposeCode} />
             <DetailRow
@@ -429,12 +430,12 @@ export function ResultsCard({
         )}
 
         {activeTab === 'paise' && (
-           <div className="w-full bg-white rounded-xl p-4 flex justify-between items-center self-stretch">
+           <div className="w-full bg-white rounded-xl p-6 flex justify-between items-center self-stretch">
              <span className="font-sans font-medium text-sm text-black">
                Effective FX spread in INR
              </span>
              <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
-               {formatNumber(data.spread, 'INR')}
+               {formatNumber(data.paisePerUnit, 'INR')}
                <Tooltip delayDuration={100}>
                  <TooltipTrigger asChild>
                    <button
@@ -517,16 +518,28 @@ export function ResultsCard({
 function DetailRow({
   label,
   value,
+  bold = false,
 }: {
   label: string;
   value: string | React.ReactNode;
+  bold?: boolean;
 }) {
   return (
     <div className="flex justify-between items-center py-1 gap-1 w-full h-7">
-      <p className="font-sans font-normal text-sm leading-5 text-[#0F172A]">
+      <p
+        className={cn(
+          'font-sans text-sm leading-5 text-[#0F172A]',
+          bold ? 'font-bold' : 'font-normal'
+        )}
+      >
         {label}
       </p>
-      <div className="font-sans font-medium text-sm leading-5 text-[#0F172A] text-right">
+      <div
+        className={cn(
+          'font-sans text-sm leading-5 text-[#0F172A] text-right',
+          bold ? 'font-bold' : 'font-medium'
+        )}
+      >
         {value}
       </div>
     </div>
