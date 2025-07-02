@@ -454,10 +454,10 @@ export function ResultsCard({
 
         {activeTab === 'bps' && (
           <div className="w-full bg-[#F5F8FF] rounded-xl p-4 flex justify-between items-center self-stretch">
-            <span className="font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
+            <span className="font-sans font-medium text-sm text-black">
               Eff. FX spread in bps
             </span>
-            <span className="flex items-center gap-1.5 font-sans font-bold text-base leading-[18px] text-black tracking-[-0.16px]">
+            <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
               {formatNumber(data.basisPoints, undefined, 5)} bps
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
