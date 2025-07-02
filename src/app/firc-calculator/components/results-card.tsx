@@ -337,7 +337,7 @@ export function ResultsCard({
         </div>
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-semibold text-base text-[#0F172A]">
+          <p className="font-bold text-base leading-7 text-[#0F172A]">
             Information on FIRA
           </p>
           <div className="flex flex-col justify-center items-start gap-[6px] self-stretch">
@@ -371,7 +371,7 @@ export function ResultsCard({
         <hr className="w-full border-t border-[#E4E4E7]" />
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-semibold text-base text-[#0F172A]">
+          <p className="font-bold text-base leading-7 text-[#0F172A]">
             Calculations
           </p>
           <div className="flex flex-col justify-center items-start gap-2 self-stretch w-full">
