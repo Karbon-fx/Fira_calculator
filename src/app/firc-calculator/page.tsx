@@ -108,7 +108,7 @@ export default function FircCalculatorPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-white p-4 sm:p-6 md:p-8">
+    <div className="flex min-h-screen w-full flex-col items-center bg-[#F5F8FF] p-0">
       <main className="flex items-center justify-center transition-opacity duration-300">
         {renderContent()}
       </main>
