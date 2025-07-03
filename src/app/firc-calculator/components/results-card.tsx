@@ -1,3 +1,4 @@
+// Version 2.0
 'use client';
 /**
  * @fileoverview ResultsCard component displays the FIRA analysis results.
@@ -498,7 +499,7 @@ export function ResultsCard({
         )}
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-sans font-semibold text-sm leading-5 text-[#1F1F1F]">
+          <p className="font-geist font-bold text-sm leading-5 text-[#1F1F1F]">
             Need better pricing that is simple & transparent?
           </p>
           <a
@@ -509,7 +510,7 @@ export function ResultsCard({
             }}
             className={cn(
               buttonVariants({ size: 'lg' }),
-              'w-full h-11 bg-[#0657D0] rounded-lg font-sans font-medium text-sm text-white hover:bg-[#0657D0]/90'
+              'w-full h-11 bg-[#0657D0] rounded-lg font-sans font-extrabold text-sm text-white hover:bg-[#0657D0]/90'
             )}
           >
             Get in Touch
@@ -520,7 +521,7 @@ export function ResultsCard({
               className="group flex items-center gap-1.5 text-[#0657D0] font-sans font-normal text-sm leading-5"
             >
               <CopyIcon />
-              <span className="relative py-1 font-normal">
+              <span className="relative py-1 font-bold">
                 Copy Links
                 <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#0657D0] transition-all duration-300 group-hover:w-full"></span>
               </span>
@@ -530,7 +531,7 @@ export function ResultsCard({
               onClick={onUploadAnother}
             >
               <UploadAnotherIcon />
-              <span className="relative py-1 font-normal">
+              <span className="relative py-1 font-bold">
                 Upload Another FIRA
                 <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#0657D0] transition-all duration-300 group-hover:w-full"></span>
               </span>
