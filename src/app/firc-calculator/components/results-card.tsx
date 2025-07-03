@@ -7,7 +7,7 @@
  */
 import { useState } from 'react';
 import type { FircResult } from '../actions';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import {
