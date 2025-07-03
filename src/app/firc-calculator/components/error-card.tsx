@@ -85,7 +85,7 @@ export function ErrorCard({
   const { headline, message } = getErrorContent(errorKey);
 
   return (
-    <div className="w-[450px] h-[806px] bg-[#F5F8FF] border border-[#F0F0F0] rounded-[16px] flex flex-col items-center justify-center p-[48px_24px] gap-[24px]">
+    <div className="w-[450px] h-[820px] bg-[#F5F8FF] rounded-[16px] flex flex-col items-center justify-center p-[48px_24px] gap-[24px]">
         
         <FiraUploadInterruptedIcon />
 

@@ -306,7 +306,7 @@ export function ResultsCard({
 
   return (
     <TooltipProvider>
-      <div className="w-[450px] bg-[#F7FAFF] border border-[#E4E4E7] rounded-[16px] flex flex-col items-start p-6 gap-4">
+      <div className="w-[450px] h-[820px] bg-[#F5F8FF] rounded-[16px] flex flex-col items-start p-6 gap-4">
         <div
           role="tablist"
           aria-label="Cost analysis tabs"

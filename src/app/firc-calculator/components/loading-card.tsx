@@ -20,7 +20,7 @@ export function LoadingCard({ message = 'Loading...' }: { message?: string }) {
   return (
     <div
       className={cn(
-        'flex flex-col justify-center items-center p-[48px_24px] gap-6 w-[450px] h-[806px] bg-[#F5F8FF] border border-[#F0F0F0] rounded-[16px]'
+        'flex flex-col justify-center items-center p-[48px_24px] gap-6 w-[450px] h-[806px] bg-[#F5F8FF] rounded-[16px]'
       )}
     >
       <div
