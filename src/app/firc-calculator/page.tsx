@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { UploadForm } from './components/upload-form';
 import { ResultsCard } from './components/results-card';
 import { LoadingCard } from './components/loading-card';
@@ -17,6 +17,7 @@ export default function FircCalculatorPage() {
   const [resultData, setResultData] = useState<FircResult | null>(null);
   const [errorKey, setErrorKey] = useState<ErrorKey | null>(null);
   const [loadingMessage, setLoadingMessage] = useState<string>('Uploading...');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleValidationError = (key: ErrorKey) => {
     setErrorKey(key);
@@ -82,10 +83,19 @@ export default function FircCalculatorPage() {
     };
   };
 
-  const handleReset = () => {
-    setView('upload');
-    setResultData(null);
-    setErrorKey(null);
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+  
+  const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleFileSelect(file);
+    }
+    // Reset file input to allow uploading the same file again
+    if (event.target) {
+      event.target.value = '';
+    }
   };
 
   const renderContent = () => {
@@ -96,11 +106,11 @@ export default function FircCalculatorPage() {
         return (
           <ResultsCard
             data={resultData!}
-            onUploadAnother={handleReset}
+            onUploadAnother={triggerFileInput}
           />
         );
       case 'error':
-        return <ErrorCard errorKey={errorKey!} onRetry={handleReset} />;
+        return <ErrorCard errorKey={errorKey!} onRetry={triggerFileInput} />;
       case 'upload':
       default:
         return <UploadForm onFileSelect={handleFileSelect} onValidationError={handleValidationError} />;
@@ -110,6 +120,13 @@ export default function FircCalculatorPage() {
   return (
     <div className="flex min-h-screen w-full flex-col items-center bg-[#F5F8FF] p-0">
       <main className="flex items-center justify-center transition-opacity duration-300">
+        <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileInputChange}
+            className="hidden"
+            accept=".pdf,.png,.jpg,.jpeg"
+        />
         {renderContent()}
       </main>
     </div>
