@@ -136,9 +136,7 @@ const formatNumber = (
   }
 
   let prefix = '';
-  if (currencyCode === 'USD') {
-    prefix = '$ ';
-  } else if (currencyCode) {
+  if (currencyCode) {
     prefix = `${currencyCode} `;
   }
 
