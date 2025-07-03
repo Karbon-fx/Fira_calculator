@@ -14,8 +14,8 @@ export const ERROR_DEFINITIONS = {
     message: 'We were unable to read the file. Kindly verify the file and attempt to upload a valid FIRA document.',
   },
   NETWORK_ERROR: {
-      headline: 'Upload Failed – Network Error',
-      message: 'There was a problem uploading your file. Please check your internet connection and try again.',
+      headline: 'Upload Interrupted',
+      message: 'Something went wrong during the upload. Please check your connection and try again.',
   },
 
   // Server-side analysis errors
