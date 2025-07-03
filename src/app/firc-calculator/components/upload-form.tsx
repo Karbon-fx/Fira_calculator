@@ -1,3 +1,4 @@
+// Version 1.0
 'use client';
 
 import { useState, useRef, DragEvent } from 'react';
