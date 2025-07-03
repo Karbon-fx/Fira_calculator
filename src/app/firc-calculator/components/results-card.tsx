@@ -154,9 +154,9 @@ function TooltipRow({
   valueStyles?: string;
 }) {
   return (
-    <div className="flex justify-between items-center text-sm self-stretch w-full font-sans">
-      <span className="text-white/80">{label}</span>
-      <div className={cn('text-white flex items-center', valueStyles)}>
+    <div className="flex justify-between items-center text-sm self-stretch w-full">
+      <span className="text-white/80 font-normal">{label}</span>
+      <div className={cn('text-white flex items-center font-medium', valueStyles)}>
         <span>{value}</span>
       </div>
     </div>
@@ -166,7 +166,7 @@ function TooltipRow({
 function SpreadTooltipContent({ data }: { data: FircResult }) {
   const transactionDate = format(new Date(data.transactionDate), 'dd/M/yyyy');
   return (
-    <div className="flex flex-col items-start p-3 bg-[#0A1F44] rounded-lg w-[350px] gap-2">
+    <div className="flex flex-col items-start p-3 bg-[#0A1F44] rounded-lg w-[350px] gap-2 font-geist">
       <TooltipRow
         label={`MMR on ${transactionDate}`}
         value={`${formatNumber(data.midMarketRate, 'INR', 2)}`}
@@ -187,7 +187,7 @@ function SpreadTooltipContent({ data }: { data: FircResult }) {
 
 function TotalCostTooltipContent({ data }: { data: FircResult }) {
   return (
-    <div className="flex flex-col items-start gap-2 p-3 bg-[#0A1F44] rounded-lg w-[358px] text-sm">
+    <div className="flex flex-col items-start gap-2 p-3 bg-[#0A1F44] rounded-lg w-[358px] text-sm font-geist">
       <TooltipRow
         label="FX spread in INR"
         value={`${formatNumber(data.spread, 'INR', 2)}`}
@@ -211,7 +211,7 @@ function TotalCostTooltipContent({ data }: { data: FircResult }) {
 
 function BpsTooltipContent({ data }: { data: FircResult }) {
   return (
-    <div className="flex flex-col items-start p-3 bg-[#0A1F44] rounded-lg w-[350px] gap-2">
+    <div className="flex flex-col items-start p-3 bg-[#0A1F44] rounded-lg w-[350px] gap-2 font-geist">
       <TooltipRow
         label="FX spread in INR"
         value={`${formatNumber(data.spread, 'INR', 2)}`}
