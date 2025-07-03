@@ -159,7 +159,7 @@ export function UploadForm({
   };
 
   return (
-    <div className="w-[450px] h-[749px] bg-[#F5F8FF] rounded-[16px] p-[48px_24px] flex flex-col justify-center items-center gap-6">
+    <div className="w-[450px] h-[749px] bg-[#F7FAFF] rounded-[16px] p-[48px_24px] flex flex-col justify-center items-center gap-6">
       <div className="flex flex-col items-center gap-6 self-stretch">
         <FiraUploadIcon />
         <p className="w-[402px] h-[42px] font-bold text-base leading-4 text-center text-[#0A1F44] flex items-center justify-center">
