@@ -289,7 +289,7 @@ export function ResultsCard({
       )}`,
     },
     paise: {
-      value: `${formatNumber(data.spread, 'INR')}`,
+      value: `${formatNumber(data.paisePerUnit, 'INR')}`,
       description: `on the mid-market rate of ${formatNumber(
         data.midMarketRate,
         'INR',
@@ -402,10 +402,9 @@ export function ResultsCard({
             />
             {activeTab !== 'paise' && (
               <DetailRow
-                label="Effective FX spread in INR"
-                value={
+                label={
                   <span className="flex items-center gap-1.5">
-                    {`${formatNumber(data.spread, 'INR', 2)}`}
+                    Effective FX spread in INR
                     <Tooltip delayDuration={100}>
                       <TooltipTrigger asChild>
                         <button
@@ -421,6 +420,7 @@ export function ResultsCard({
                     </Tooltip>
                   </span>
                 }
+                value={`${formatNumber(data.spread, 'INR', 2)}`}
                 bold={true}
               />
             )}
@@ -429,11 +429,8 @@ export function ResultsCard({
 
         {activeTab === 'totalCost' && (
           <div className="w-full bg-white rounded-xl py-6 px-4 flex justify-between items-center self-stretch">
-            <span className="font-semibold text-sm text-black">
+            <span className="font-semibold text-sm text-black flex items-center gap-1.5">
               Effective Total Cost
-            </span>
-            <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
-              {formatNumber(data.hiddenCost, 'INR')}
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
                   <button
@@ -448,16 +445,16 @@ export function ResultsCard({
                 </TooltipContent>
               </Tooltip>
             </span>
+            <span className="font-sans font-semibold text-xl tracking-tight text-black">
+              {formatNumber(data.hiddenCost, 'INR')}
+            </span>
           </div>
         )}
 
         {activeTab === 'paise' && (
            <div className="w-full bg-white rounded-xl p-6 flex justify-between items-center self-stretch">
-             <span className="font-semibold text-sm text-black">
+             <span className="font-semibold text-sm text-black flex items-center gap-1.5">
                Effective FX spread in INR
-             </span>
-             <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
-               {formatNumber(data.spread, 'INR')}
                <Tooltip delayDuration={100}>
                  <TooltipTrigger asChild>
                    <button
@@ -472,16 +469,16 @@ export function ResultsCard({
                  </TooltipContent>
                </Tooltip>
              </span>
+             <span className="font-sans font-semibold text-xl tracking-tight text-black">
+               {formatNumber(data.spread, 'INR')}
+             </span>
            </div>
         )}
 
         {activeTab === 'bps' && (
           <div className="w-full bg-white rounded-xl py-6 px-4 flex justify-between items-center self-stretch">
-            <span className="font-semibold text-sm text-black">
+            <span className="font-semibold text-sm text-black flex items-center gap-1.5">
               Eff. FX spread in bps
-            </span>
-            <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
-              {formatNumber(data.basisPoints, undefined, 2)} bps
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
                   <button
@@ -495,6 +492,9 @@ export function ResultsCard({
                   <BpsTooltipContent data={data} />
                 </TooltipContent>
               </Tooltip>
+            </span>
+            <span className="font-sans font-semibold text-xl tracking-tight text-black">
+              {formatNumber(data.basisPoints, undefined, 2)} bps
             </span>
           </div>
         )}
@@ -549,7 +549,7 @@ function DetailRow({
   value,
   bold = false,
 }: {
-  label: string;
+  label: string | React.ReactNode;
   value: string | React.ReactNode;
   bold?: boolean;
 }) {
@@ -557,8 +557,7 @@ function DetailRow({
     <div className="flex justify-between items-center py-1 gap-1 w-full h-7">
       <p
         className={cn(
-          'font-geist text-sm leading-5 text-[#0F172A]',
-          bold ? 'font-[]' : 'font-normal'
+          'font-geist text-sm leading-5 text-[#0F172A] flex items-center font-normal'
         )}
       >
         {label}
