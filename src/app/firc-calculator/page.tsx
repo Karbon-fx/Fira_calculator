@@ -119,7 +119,7 @@ export default function FircCalculatorPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center bg-[#F5F8FF] p-0">
+    <div className="flex min-h-screen w-full flex-col items-center bg-[#F7FAFF] p-0">
       <main className="flex items-center justify-center transition-opacity duration-300">
         <input
             type="file"
