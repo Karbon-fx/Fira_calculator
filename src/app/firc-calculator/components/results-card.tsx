@@ -351,7 +351,7 @@ export function ResultsCard({
         </div>
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-geist font-semibold text-[16px] leading-[28px] align-middle">
+          <p className="font-geist font-bold text-[16px] leading-7 align-middle">
             
             Information on FIRA
           </p>
@@ -386,7 +386,7 @@ export function ResultsCard({
         <hr className="w-full border-t border-[#E4E4E7]" />
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-geist font-semibold text-[16px] leading-[28px] align-middle">
+          <p className="font-geist font-bold text-[16px] leading-7 align-middle">
             Calculations
           </p>
           <div className="flex flex-col justify-center items-start gap-2 self-stretch w-full">
@@ -451,7 +451,7 @@ export function ResultsCard({
 
         {activeTab === 'paise' && (
            <div className="w-full bg-white rounded-xl p-6 flex justify-between items-center self-stretch">
-             <span className="font-semibold text-sm text-black flex items-center gap-1.5">
+             <span className="font-sans font-semibold text-sm text-black flex items-center gap-1.5">
                Effective FX spread in INR
                <Tooltip delayDuration={100}>
                  <TooltipTrigger asChild>
@@ -467,7 +467,7 @@ export function ResultsCard({
                  </TooltipContent>
                </Tooltip>
              </span>
-             <span className="font-sans font-semibold text-xl tracking-tight text-black">
+             <span className="font-geist font-semibold text-xl tracking-tight text-black">
                {formatNumber(data.spread, 'INR')}
              </span>
            </div>
@@ -475,7 +475,7 @@ export function ResultsCard({
 
         {activeTab === 'bps' && (
           <div className="w-full bg-white rounded-xl py-6 px-4 flex justify-between items-center self-stretch">
-            <span className="font-semibold text-sm text-black flex items-center gap-1.5">
+            <span className="font-sans font-semibold text-sm text-black flex items-center gap-1.5">
               Eff. FX spread in bps
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
@@ -491,7 +491,7 @@ export function ResultsCard({
                 </TooltipContent>
               </Tooltip>
             </span>
-            <span className="font-sans font-semibold text-xl tracking-tight text-black">
+            <span className="font-geist font-semibold text-xl tracking-tight text-black">
               {formatNumber(data.basisPoints, undefined, 2)} bps
             </span>
           </div>
