@@ -289,7 +289,7 @@ export function ResultsCard({
       )}`,
     },
     paise: {
-      value: `${formatNumber(data.paisePerUnit, 'INR')}`,
+      value: `${formatNumber(data.spread, 'INR')}`,
       description: `on the mid-market rate of ${formatNumber(
         data.midMarketRate,
         'INR',
@@ -555,13 +555,13 @@ function DetailRow({
 }) {
   return (
     <div className="flex justify-between items-center py-1 gap-1 w-full h-7">
-      <p
+      <div
         className={cn(
           'font-geist text-sm leading-5 text-[#0F172A] flex items-center font-normal'
         )}
       >
         {label}
-      </p>
+      </div>
       <div
         className={cn(
           'font-geist text-sm leading-5 text-[#0F172A] text-right',
