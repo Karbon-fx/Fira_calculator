@@ -1,6 +1,7 @@
 'use client';
 
 import { getErrorContent, ErrorKey } from '../error-definitions';
+import { cn } from '@/lib/utils';
 
 // This card is a pixel-perfect implementation of the Figma design for a FIRA upload error state.
 // It is displayed when a file is determined to be unreadable or corrupted.
@@ -48,8 +49,8 @@ const FiraUploadInterruptedIcon = () => (
         <rect x="64.9307" y="79.4453" width="59.75" height="59.75" rx="29.875" fill="#E53935"/>
         <path d="M94.9998 115.293C95.3422 115.293 95.6292 115.177 95.8608 114.946C96.0924 114.714 96.2082 114.427 96.2082 114.085C96.2082 113.742 96.0924 113.455 95.8608 113.224C95.6292 112.992 95.3422 112.876 94.9998 112.876C94.6575 112.876 94.3705 112.992 94.1389 113.224C93.9073 113.455 93.7915 113.742 93.7915 114.085C93.7915 114.427 93.9073 114.714 94.1389 114.946C94.3705 115.177 94.6575 115.293 94.9998 115.293ZM93.7915 110.46H96.2082V103.21H93.7915V110.46ZM94.9998 121.335C93.3283 121.335 91.7575 121.017 90.2873 120.383C88.8172 119.749 87.5384 118.888 86.4509 117.8C85.3634 116.713 84.5024 115.434 83.8681 113.964C83.2337 112.494 82.9165 110.923 82.9165 109.251C82.9165 107.58 83.2337 106.009 83.8681 104.539C84.5024 103.069 85.3634 101.79 86.4509 100.702C87.5384 99.6148 88.8172 98.7539 90.2873 98.1195C91.7575 97.4852 93.3283 97.168 94.9998 97.168C96.6714 97.168 98.2422 97.4852 99.7123 98.1195C101.182 98.7539 102.461 99.6148 103.549 100.702C104.636 101.79 105.497 103.069 106.132 104.539C106.766 106.009 107.083 107.58 107.083 109.251C107.083 110.923 106.766 112.494 106.132 113.964C105.497 115.434 104.636 116.713 103.549 117.8C102.461 118.888 101.182 119.749 99.7123 120.383C98.2422 121.017 96.6714 121.335 94.9998 121.335ZM94.9998 118.918C97.6984 118.918 99.9842 117.982 101.857 116.109C103.73 114.236 104.667 111.95 104.667 109.251C104.667 106.553 103.73 104.267 101.857 102.394C99.9842 100.521 97.6984 99.5846 94.9998 99.5846C92.3012 99.5846 90.0155 100.521 88.1425 102.394C86.2696 104.267 85.3332 106.553 85.3332 109.251C85.3332 111.95 86.2696 114.236 88.1425 116.109C90.0155 117.982 92.3012 118.918 94.9998 118.918Z" fill="#E8EAED"/>
         <defs>
-            <filter id="filter0_d_10737_11102" x="-0.00966787" y="0.275" width="97.0184" height="131.45" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+            <filter id="filter0_d_10737_11102" x="-0.00966787" y="0.275" width="97.0184" height="131.45" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
                 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                 <feOffset/>
                 <feGaussianBlur stdDeviation="2.9875"/>
@@ -94,7 +95,10 @@ export function ErrorCard({
         
         <div className="bg-[#F5F8FF] border border-[#DDE4ED] rounded-[12px] p-[16px_12px] flex flex-row items-start gap-[6px] self-stretch">
             <InfoIcon />
-            <p className="flex-grow font-sans text-[12px] leading-[16px] text-black font-normal">
+            <p className={cn(
+              "flex-grow font-sans text-[12px] leading-[16px] text-black",
+              errorKey === 'EXTRACTION_FAILED' ? 'font-bold' : 'font-normal'
+            )}>
                 {message}
             </p>
         </div>
