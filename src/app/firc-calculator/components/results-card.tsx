@@ -289,7 +289,7 @@ export function ResultsCard({
       )}`,
     },
     paise: {
-      value: `${formatNumber(data.paisePerUnit, 'INR')}`,
+      value: `${formatNumber(data.spread, 'INR')}`,
       description: `on the mid-market rate of ${formatNumber(
         data.midMarketRate,
         'INR',
@@ -339,7 +339,7 @@ export function ResultsCard({
           aria-labelledby={`tab-${activeTab}`}
           className="w-full border-[1.84px] border-[#E4E4E7] rounded-xl flex flex-col items-start justify-center p-3 gap-2 self-stretch"
         >
-          <p className="font-semibold text-base leading-7 text-[#0A1F44]">
+          <p className="font-semibold text-base leading-7 text-black">
             {data.bankName} has charged you
           </p>
           <div className="flex flex-col items-start gap-1">
@@ -353,7 +353,7 @@ export function ResultsCard({
         </div>
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-bold  text-base leading-7 text-[#0F172A]">
+          <p className="font-bold text-base leading-7 text-[#0F172A]">
             
             Information on FIRA
           </p>
@@ -457,7 +457,7 @@ export function ResultsCard({
                Effective FX spread in INR
              </span>
              <span className="flex items-center gap-1.5 font-sans font-semibold text-xl tracking-tight text-black">
-               {formatNumber(data.paisePerUnit, 'INR')}
+               {formatNumber(data.spread, 'INR')}
                <Tooltip delayDuration={100}>
                  <TooltipTrigger asChild>
                    <button
