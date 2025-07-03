@@ -117,12 +117,12 @@ const formatNumber = (
   decimals = 2
 ) => {
   if (typeof value !== 'number' || isNaN(value)) {
-    return currencyCode === 'INR'
-      ? '₹ 0.00'
-      : currencyCode
-        ? `${currencyCode} 0.00`
-        : '0.00';
+    if (currencyCode === 'INR') {
+      return `0.00 INR`;
+    }
+    return currencyCode ? `${currencyCode} 0.00` : '0.00';
   }
+
   const options = {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
@@ -131,16 +131,18 @@ const formatNumber = (
     Math.abs(value)
   );
 
-  let symbol = '';
   if (currencyCode === 'INR') {
-    symbol = '₹ ';
-  } else if (currencyCode === 'USD') {
-    symbol = '$ ';
-  } else if (currencyCode) {
-    symbol = `${currencyCode} `;
+    return `${formatted} INR`;
   }
 
-  return `${symbol}${formatted}`;
+  let prefix = '';
+  if (currencyCode === 'USD') {
+    prefix = '$ ';
+  } else if (currencyCode) {
+    prefix = `${currencyCode} `;
+  }
+
+  return `${prefix}${formatted}`;
 };
 
 // --- TOOLTIP CONTENTS ---
@@ -351,7 +353,8 @@ export function ResultsCard({
         </div>
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-bold text-base leading-7 text-[#0F172A]">
+          <p className="font-bold  text-base leading-7 text-[#0F172A]">
+            
             Information on FIRA
           </p>
           <div className="flex flex-col justify-center items-start gap-[6px] self-stretch">
@@ -500,12 +503,19 @@ export function ResultsCard({
           <p className="font-sans font-semibold text-sm leading-5 text-[#1F1F1F]">
             Need better pricing that is simple & transparent?
           </p>
-          <Button
-            onClick={handleContactClick}
-            className="w-full h-11 bg-[#0657D0] rounded-lg font-sans font-medium text-sm text-white hover:bg-[#0657D0]/90"
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              handleContactClick();
+            }}
+            className={cn(
+              buttonVariants({ size: 'lg' }),
+              'w-full h-11 bg-[#0657D0] rounded-lg font-sans font-medium text-sm text-white hover:bg-[#0657D0]/90'
+            )}
           >
             Get in Touch
-          </Button>
+          </a>
           <div className="w-full flex justify-between items-center">
             <button
               onClick={handleCopy}
@@ -547,15 +557,15 @@ function DetailRow({
     <div className="flex justify-between items-center py-1 gap-1 w-full h-7">
       <p
         className={cn(
-          'font-sans text-sm leading-5 text-[#0F172A]',
-          bold ? 'font-bold' : 'font-normal'
+          'font-geist text-sm leading-5 text-[#0F172A]',
+          bold ? 'font-[]' : 'font-normal'
         )}
       >
         {label}
       </p>
       <div
         className={cn(
-          'font-sans text-sm leading-5 text-[#0F172A] text-right',
+          'font-geist text-sm leading-5 text-[#0F172A] text-right',
           bold ? 'font-bold' : 'font-medium'
         )}
       >

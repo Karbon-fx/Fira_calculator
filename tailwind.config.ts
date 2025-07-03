@@ -11,6 +11,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Mona Sans"', 'sans-serif'],
+        geist: ['"Geist"', 'sans-serif'],
         body: ['"Mona Sans"', 'sans-serif'],
         headline: ['"Mona Sans"', 'sans-serif'],
         code: ['monospace'],

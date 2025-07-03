@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
-      <body className={cn("font-sans antialiased h-full")}>
+      <body className={cn("font-geist antialiased h-full")}>
         {children}
         <Toaster />
         <Script src="https://cdn.jotfor.ms/s/static/feedback2.js" type="text/javascript" />
