@@ -522,7 +522,7 @@ export function ResultsCard({
             >
               <CopyIcon />
               <span className="relative py-1 font-bold">
-                Copy Links
+                Copy Result
                 <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#0657D0] transition-all duration-300 group-hover:w-full"></span>
               </span>
             </button>
