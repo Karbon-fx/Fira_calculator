@@ -1,4 +1,3 @@
-// Version 2.0
 'use client';
 /**
  * @fileoverview ResultsCard component displays the FIRA analysis results.
@@ -273,9 +272,11 @@ export function ResultsCard({
   };
 
   const handleContactClick = () => {
-    if (typeof window !== 'undefined' && (window as any).JFL_251765324497062) {
-      (window as any).JFL_251765324497062.open();
-    }
+    window.open(
+      'https://form.jotform.com/251765324497062',
+      'blank',
+      'scrollbars=yes,toolbar=no,width=700,height=500'
+    );
   };
 
   const tabContent = {
@@ -307,7 +308,7 @@ export function ResultsCard({
 
   return (
     <TooltipProvider>
-      <div className="w-[450px] h-[820px] bg-[#F5F8FF] rounded-[16px] flex flex-col items-start p-6 gap-4">
+      <div className="w-[450px] bg-[#F7FAFF] border border-[#E4E4E7] rounded-[16px] flex flex-col items-start p-6 gap-4">
         <div
           role="tablist"
           aria-label="Cost analysis tabs"
