@@ -308,11 +308,11 @@ export function ResultsCard({
 
   return (
     <TooltipProvider>
-      <div className="w-[450px] bg-[#F7FAFF] border border-[#E4E4E7] rounded-[16px] flex flex-col items-start p-6 gap-4">
+      <div className="w-[450px] bg-[#F7FAFF] rounded-[16px] flex flex-col items-start p-6 gap-4">
         <div
           role="tablist"
           aria-label="Cost analysis tabs"
-          className="w-full p-1 bg-white border border-[#E4E4E7] rounded-[6px] flex flex-row items-center self-stretch h-[48px] gap-1"
+          className="w-full p-1 bg-white rounded-[6px] flex flex-row items-center self-stretch h-[48px] gap-1"
         >
           {tabs.map((tab) => (
             <button
