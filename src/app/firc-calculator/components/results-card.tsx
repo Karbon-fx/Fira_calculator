@@ -1,3 +1,4 @@
+// Version 4
 'use client';
 /**
  * @fileoverview ResultsCard component displays the FIRA analysis results.
@@ -7,7 +8,7 @@
  */
 import { useState } from 'react';
 import type { FircResult } from '../actions';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import {
@@ -273,9 +274,8 @@ export function ResultsCard({
 
   const handleContactClick = () => {
     window.open(
-      'https://form.jotform.com/251765324497062',
-      'blank',
-      'scrollbars=yes,toolbar=no,width=700,height=500'
+      'https://karbonfx.com/signup-v2-form?utm_source=karboncard&keyword=%2Ffira-calculator',
+      '_blank'
     );
   };
 

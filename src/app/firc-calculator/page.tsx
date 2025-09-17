@@ -98,6 +98,15 @@ export default function FircCalculatorPage() {
       event.target.value = '';
     }
   };
+  
+  const handleReset = () => {
+    setView('upload');
+    setResultData(null);
+    setErrorKey(null);
+    if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
+  };
 
   const renderContent = () => {
     switch (view) {
