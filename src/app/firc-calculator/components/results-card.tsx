@@ -6,11 +6,13 @@
  * @prop {FircResult} data - The calculated data from the FIRA document.
  * @prop {() => void} onUploadAnother - Handler to reset the form and upload a new file.
  */
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import type { FircResult } from '../actions';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import {
   Tooltip,
   TooltipContent,
@@ -86,30 +88,37 @@ const UploadAnotherIcon = () => (
   </svg>
 );
 
-const CopyIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M11.3333 1.33331H4.66667C3.93028 1.33331 3.33333 1.93026 3.33333 2.66665V10.6666C3.33333 11.403 3.93028 12 4.66667 12H11.3333C12.0697 12 12.6667 11.403 12.6667 10.6666V2.66665C12.6667 1.93026 12.0697 1.33331 11.3333 1.33331Z"
-      stroke="#0657D0"
-      strokeWidth="1.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M8.66669 12V13.3333C8.66669 14.0697 8.06974 14.6667 7.33335 14.6667H2.66669C1.93029 14.6667 1.33334 14.0697 1.33334 13.3333V5.33331C1.33334 4.59692 1.93029 3.99998 2.66669 3.99998H4.00002"
-      stroke="#0657D0"
-      strokeWidth="1.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
+const DownloadIcon = () => (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M8 12.6667V3.33333"
+        stroke="#0657D0"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3.33331 8.66667V10C3.33331 11.4728 4.52721 12.6667 6 12.6667H10C11.4728 12.6667 12.6666 11.4728 12.6666 10V8.66667"
+        stroke="#0657D0"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+       <path
+        d="M6 8L8 10L10 8"
+        stroke="#0657D0"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 
 // --- HELPERS ---
 const formatNumber = (
@@ -236,6 +245,83 @@ function BpsTooltipContent({ data }: { data: FircResult }) {
   );
 }
 
+// Hidden component for PDF generation
+const PdfReport = ({ data, reportRef }: { data: FircResult, reportRef: React.RefObject<HTMLDivElement> }) => (
+    <div
+      ref={reportRef}
+      className="absolute -left-[9999px] top-auto w-[450px] p-6 bg-[#F7FAFF] flex flex-col gap-4 font-geist"
+    >
+        <h1 className="text-xl font-bold text-center mb-4 text-[#0A1F44]">FIRA Cost Analysis Report</h1>
+        
+        {/* Total Cost Section */}
+        <div className="w-full border-[1.84px] border-[#E4E4E7] rounded-xl flex flex-col items-start justify-center p-3 gap-2 self-stretch mb-4">
+            <p className="font-semibold text-lg leading-7 text-black">Total Cost</p>
+            <p className="font-semibold text-3xl leading-9 tracking-[-0.025em] text-black">
+                {formatNumber(data.hiddenCost, 'INR')}
+            </p>
+            <p className="font-normal text-sm leading-5 text-[#0A1F44]">
+                on the mid-market rate of {formatNumber(data.midMarketRate, 'INR', 2)}
+            </p>
+        </div>
+
+        {/* Paise per Unit Section */}
+        <div className="w-full border-[1.84px] border-[#E4E4E7] rounded-xl flex flex-col items-start justify-center p-3 gap-2 self-stretch mb-4">
+            <p className="font-semibold text-lg leading-7 text-black">Paise per Unit</p>
+            <p className="font-semibold text-3xl leading-9 tracking-[-0.025em] text-black">
+                {formatNumber(data.spread, 'INR')}
+            </p>
+            <p className="font-normal text-sm leading-5 text-[#0A1F44]">
+                on the mid-market rate of {formatNumber(data.midMarketRate, 'INR', 2)}
+            </p>
+        </div>
+
+        {/* Basis Points (bps) Section */}
+        <div className="w-full border-[1.84px] border-[#E4E4E7] rounded-xl flex flex-col items-start justify-center p-3 gap-2 self-stretch mb-4">
+            <p className="font-semibold text-lg leading-7 text-black">Basis Points (bps)</p>
+            <p className="font-semibold text-3xl leading-9 tracking-[-0.025em] text-black">
+                {formatNumber(data.basisPoints, undefined, 2)} bps
+            </p>
+            <p className="font-normal text-sm leading-5 text-[#0A1F44]">
+                on the mid-market rate of {formatNumber(data.midMarketRate, 'INR', 2)}
+            </p>
+        </div>
+        
+        <div className="w-full flex flex-col items-start gap-3 self-stretch">
+          <p className="font-geist font-bold text-[16px] leading-7 align-middle">
+            Information on FIRA
+          </p>
+          <div className="flex flex-col justify-center items-start gap-[6px] self-stretch">
+            <DetailRow
+              label="Date of transaction"
+              value={format(new Date(data.transactionDate), 'MMM dd, yyyy')}
+              bold={true}
+            />
+            <DetailRow label="Purpose code" value={data.purposeCode} bold={true} />
+            <DetailRow
+              label={`${data.foreignCurrencyCode} Amount`}
+              value={`${formatNumber(
+                data.foreignCurrencyAmount,
+                data.foreignCurrencyCode
+              )}`}
+              bold={true}
+            />
+            <DetailRow
+              label="User FX rate on FIRA"
+              value={`${formatNumber(data.bankRate, 'INR', 2)}`}
+              bold={true}
+            />
+            <DetailRow
+              label="INR after FX"
+              value={formatNumber(data.inrCredited, 'INR')}
+              bold={true}
+            />
+          </div>
+        </div>
+
+    </div>
+);
+
+
 interface ResultsCardProps {
   data: FircResult;
   onUploadAnother: () => void;
@@ -246,6 +332,7 @@ export function ResultsCard({
   onUploadAnother,
 }: ResultsCardProps) {
   const [activeTab, setActiveTab] = useState('totalCost');
+  const pdfReportRef = useRef<HTMLDivElement>(null);
 
   const tabs = [
     { id: 'totalCost', label: 'Total Cost' },
@@ -253,25 +340,33 @@ export function ResultsCard({
     { id: 'bps', label: 'Basis Points (bps)' },
   ];
 
-  const handleCopy = () => {
-    const resultText = `FIRC Analysis Result:
-- Bank: ${data.bankName}
-- Transaction Date: ${format(new Date(data.transactionDate), 'MMM dd, yyyy')}
-- Total Hidden Cost: ${formatNumber(data.hiddenCost, 'INR')}
-- Mid-Market Rate: ${formatNumber(data.midMarketRate, 'INR')}
-- Effective FX Spread: ${formatNumber(data.spread, 'INR', 6)}
-- Basis Points: ${formatNumber(data.basisPoints, undefined, 0)}
-    `;
-    navigator.clipboard
-      .writeText(resultText)
-      .then(() => {
-        alert('Results copied to clipboard!');
-      })
-      .catch((err) => {
-        console.error('Failed to copy: ', err);
+  const handleDownload = async () => {
+    const input = pdfReportRef.current;
+    if (!input) {
+      console.error("PDF report element not found");
+      return;
+    }
+  
+    try {
+      const canvas = await html2canvas(input, {
+          scale: 2, // Improves quality
+          useCORS: true,
+          backgroundColor: '#F7FAFF',
       });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'px',
+        format: [canvas.width, canvas.height],
+      });
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save(`FIRC_Analysis_${data.transactionDate}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
   };
-
+  
   const handleContactClick = () => {
     window.open(
       'https://karbonfx.com/signup-v2-form?utm_source=karboncard&keyword=%2Ffira-calculator',
@@ -309,6 +404,9 @@ export function ResultsCard({
   return (
     <TooltipProvider>
       <div className="w-[450px] bg-[#F7FAFF] border border-[#E4E4E7] rounded-[16px] flex flex-col items-start p-6 gap-4">
+        {/* Hidden report for PDF generation */}
+        <PdfReport data={data} reportRef={pdfReportRef} />
+        
         <div
           role="tablist"
           aria-label="Cost analysis tabs"
@@ -518,12 +616,12 @@ export function ResultsCard({
           </a>
           <div className="w-full flex justify-between items-center">
             <button
-              onClick={handleCopy}
+              onClick={handleDownload}
               className="group flex items-center gap-1.5 text-[#0657D0] font-sans font-normal text-sm leading-5"
             >
-              <CopyIcon />
+              <DownloadIcon />
               <span className="relative py-1 font-bold">
-                Copy Result
+                Download PDF
                 <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#0657D0] transition-all duration-300 group-hover:w-full"></span>
               </span>
             </button>
