@@ -1,4 +1,3 @@
-// Version 4
 'use client';
 /**
  * @fileoverview ResultsCard component displays the FIRA analysis results.
@@ -8,17 +7,16 @@
  */
 import { useState, useRef } from 'react';
 import type { FircResult } from '../actions';
-import { buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { generateFircReport } from './firc-report';
 
 // --- ICONS ---
 const InfoIcon = () => (
@@ -88,37 +86,62 @@ const UploadAnotherIcon = () => (
   </svg>
 );
 
+const CopyIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M11.3333 1.33331H4.66667C3.93028 1.33331 3.33333 1.93026 3.33333 2.66665V10.6666C3.33333 11.403 3.93028 12 4.66667 12H11.3333C12.0697 12 12.6667 11.403 12.6667 10.6666V2.66665C12.6667 1.93026 12.0697 1.33331 11.3333 1.33331Z"
+      stroke="#0657D0"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.66669 12V13.3333C8.66669 14.0697 8.06974 14.6667 7.33335 14.6667H2.66669C1.93029 14.6667 1.33334 14.0697 1.33334 13.3333V5.33331C1.33334 4.59692 1.93029 3.99998 2.66669 3.99998H4.00002"
+      stroke="#0657D0"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 const DownloadIcon = () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M8 12.6667V3.33333"
-        stroke="#0657D0"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M3.33331 8.66667V10C3.33331 11.4728 4.52721 12.6667 6 12.6667H10C11.4728 12.6667 12.6666 11.4728 12.6666 10V8.66667"
-        stroke="#0657D0"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-       <path
-        d="M6 8L8 10L10 8"
-        stroke="#0657D0"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M14 10V12.6667C14 13.0203 13.8595 13.3594 13.6095 13.6095C13.3594 13.8595 13.0203 14 12.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V10"
+      stroke="#0657D0"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M4.66667 6.66669L8.00001 10L11.3333 6.66669"
+      stroke="#0657D0"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8 10V2"
+      stroke="#0657D0"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
 // --- HELPERS ---
 const formatNumber = (
@@ -245,83 +268,6 @@ function BpsTooltipContent({ data }: { data: FircResult }) {
   );
 }
 
-// Hidden component for PDF generation
-const PdfReport = ({ data, reportRef }: { data: FircResult, reportRef: React.RefObject<HTMLDivElement> }) => (
-    <div
-      ref={reportRef}
-      className="absolute -left-[9999px] top-auto w-[450px] p-6 bg-[#F7FAFF] flex flex-col gap-4 font-geist"
-    >
-        <h1 className="text-xl font-bold text-center mb-4 text-[#0A1F44]">FIRA Cost Analysis Report</h1>
-        
-        {/* Total Cost Section */}
-        <div className="w-full border-[1.84px] border-[#E4E4E7] rounded-xl flex flex-col items-start justify-center p-3 gap-2 self-stretch mb-4">
-            <p className="font-semibold text-lg leading-7 text-black">Total Cost</p>
-            <p className="font-semibold text-3xl leading-9 tracking-[-0.025em] text-black">
-                {formatNumber(data.hiddenCost, 'INR')}
-            </p>
-            <p className="font-normal text-sm leading-5 text-[#0A1F44]">
-                on the mid-market rate of {formatNumber(data.midMarketRate, 'INR', 2)}
-            </p>
-        </div>
-
-        {/* Paise per Unit Section */}
-        <div className="w-full border-[1.84px] border-[#E4E4E7] rounded-xl flex flex-col items-start justify-center p-3 gap-2 self-stretch mb-4">
-            <p className="font-semibold text-lg leading-7 text-black">Paise per Unit</p>
-            <p className="font-semibold text-3xl leading-9 tracking-[-0.025em] text-black">
-                {formatNumber(data.spread, 'INR')}
-            </p>
-            <p className="font-normal text-sm leading-5 text-[#0A1F44]">
-                on the mid-market rate of {formatNumber(data.midMarketRate, 'INR', 2)}
-            </p>
-        </div>
-
-        {/* Basis Points (bps) Section */}
-        <div className="w-full border-[1.84px] border-[#E4E4E7] rounded-xl flex flex-col items-start justify-center p-3 gap-2 self-stretch mb-4">
-            <p className="font-semibold text-lg leading-7 text-black">Basis Points (bps)</p>
-            <p className="font-semibold text-3xl leading-9 tracking-[-0.025em] text-black">
-                {formatNumber(data.basisPoints, undefined, 2)} bps
-            </p>
-            <p className="font-normal text-sm leading-5 text-[#0A1F44]">
-                on the mid-market rate of {formatNumber(data.midMarketRate, 'INR', 2)}
-            </p>
-        </div>
-        
-        <div className="w-full flex flex-col items-start gap-3 self-stretch">
-          <p className="font-geist font-bold text-[16px] leading-7 align-middle">
-            Information on FIRA
-          </p>
-          <div className="flex flex-col justify-center items-start gap-[6px] self-stretch">
-            <DetailRow
-              label="Date of transaction"
-              value={format(new Date(data.transactionDate), 'MMM dd, yyyy')}
-              bold={true}
-            />
-            <DetailRow label="Purpose code" value={data.purposeCode} bold={true} />
-            <DetailRow
-              label={`${data.foreignCurrencyCode} Amount`}
-              value={`${formatNumber(
-                data.foreignCurrencyAmount,
-                data.foreignCurrencyCode
-              )}`}
-              bold={true}
-            />
-            <DetailRow
-              label="User FX rate on FIRA"
-              value={`${formatNumber(data.bankRate, 'INR', 2)}`}
-              bold={true}
-            />
-            <DetailRow
-              label="INR after FX"
-              value={formatNumber(data.inrCredited, 'INR')}
-              bold={true}
-            />
-          </div>
-        </div>
-
-    </div>
-);
-
-
 interface ResultsCardProps {
   data: FircResult;
   onUploadAnother: () => void;
@@ -332,7 +278,8 @@ export function ResultsCard({
   onUploadAnother,
 }: ResultsCardProps) {
   const [activeTab, setActiveTab] = useState('totalCost');
-  const pdfReportRef = useRef<HTMLDivElement>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const tabs = [
     { id: 'totalCost', label: 'Total Cost' },
@@ -340,38 +287,42 @@ export function ResultsCard({
     { id: 'bps', label: 'Basis Points (bps)' },
   ];
 
-  const handleDownload = async () => {
-    const input = pdfReportRef.current;
-    if (!input) {
-      console.error("PDF report element not found");
-      return;
-    }
-  
+  const handleCopy = () => {
+    const resultText = `FIRC Analysis Result:
+- Bank: ${data.bankName}
+- Transaction Date: ${format(new Date(data.transactionDate), 'MMM dd, yyyy')}
+- Total Hidden Cost: ${formatNumber(data.hiddenCost, 'INR')}
+- Mid-Market Rate: ${formatNumber(data.midMarketRate, 'INR')}
+- Effective FX Spread: ${formatNumber(data.spread, 'INR', 6)}
+- Basis Points: ${formatNumber(data.basisPoints, undefined, 0)}
+    `;
+    navigator.clipboard
+      .writeText(resultText)
+      .then(() => {
+        alert('Results copied to clipboard!');
+      })
+      .catch((err) => {
+        console.error('Failed to copy: ', err);
+      });
+  };
+
+  const handleDownloadPDF = async () => {
     try {
-      const canvas = await html2canvas(input, {
-          scale: 2, // Improves quality
-          useCORS: true,
-          backgroundColor: '#F7FAFF',
+      setIsGeneratingPDF(true);
+      await generateFircReport({ 
+        data, 
+        activeTab: activeTab as 'totalCost' | 'paise' | 'bps' 
       });
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'p',
-        unit: 'px',
-        format: [canvas.width, canvas.height],
-      });
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      pdf.save(`FIRC_Analysis_${data.transactionDate}.pdf`);
     } catch (error) {
-      console.error("Error generating PDF:", error);
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
-  
-  const handleContactClick = () => {
-    window.open(
-      'https://karbonfx.com/signup-v2-form?utm_source=karboncard&keyword=%2Ffira-calculator',
-      '_blank'
-    );
+
+  const handleSignUpRedirect = () => {
+    window.location.href = 'https://www.karboncard.com/accept-international-payments-india';
   };
 
   const tabContent = {
@@ -403,14 +354,11 @@ export function ResultsCard({
 
   return (
     <TooltipProvider>
-      <div className="w-[450px] bg-[#F7FAFF] border border-[#E4E4E7] rounded-[16px] flex flex-col items-start p-6 gap-4">
-        {/* Hidden report for PDF generation */}
-        <PdfReport data={data} reportRef={pdfReportRef} />
-        
+      <div className="w-[450px] bg-[#F7FAFF] rounded-[16px] flex flex-col items-start p-6 gap-4" ref={cardRef}>
         <div
           role="tablist"
           aria-label="Cost analysis tabs"
-          className="w-full p-1 bg-white border border-[#E4E4E7] rounded-[6px] flex flex-row items-center self-stretch h-[48px] gap-1"
+          className="w-full p-1 bg-white rounded-[6px] flex flex-row items-center self-stretch h-[48px] gap-1"
         >
           {tabs.map((tab) => (
             <button
@@ -599,31 +547,43 @@ export function ResultsCard({
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
           <p className="font-geist font-bold text-sm leading-5 text-[#1F1F1F]">
-            Need better pricing that is simple & transparent?
+            Don't miss out! Save up to 4% on international payments:
           </p>
           <a
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              handleContactClick();
+              handleSignUpRedirect();
             }}
             className={cn(
               buttonVariants({ size: 'lg' }),
               'w-full h-11 bg-[#0657D0] rounded-lg font-sans font-extrabold text-sm text-white hover:bg-[#0657D0]/90'
             )}
           >
-            Get in Touch
+            Sign Up Now
           </a>
           <div className="w-full flex justify-between items-center">
             <button
-              onClick={handleDownload}
+              onClick={handleDownloadPDF}
               className="group flex items-center gap-1.5 text-[#0657D0] font-sans font-normal text-sm leading-5"
+              disabled={isGeneratingPDF}
             >
-              <DownloadIcon />
-              <span className="relative py-1 font-bold">
-                Download PDF
-                <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#0657D0] transition-all duration-300 group-hover:w-full"></span>
-              </span>
+              {isGeneratingPDF ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-[#0657D0] border-t-transparent animate-spin rounded-full mr-1.5"></div>
+                  <span className="relative py-1 font-bold">
+                    Generating PDF...
+                  </span>
+                </>
+              ) : (
+                <>
+                  <DownloadIcon />
+                  <span className="relative py-1 font-bold">
+                    Download Results as PDF
+                    <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#0657D0] transition-all duration-300 group-hover:w-full"></span>
+                  </span>
+                </>
+              )}
             </button>
             <button
               className="group flex items-center gap-1.5 text-[#0657D0] font-sans font-normal text-sm leading-5 hover:bg-transparent"
