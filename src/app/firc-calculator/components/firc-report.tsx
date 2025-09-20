@@ -46,7 +46,7 @@ function buildReportHTML(data: FircResult, activeTab: 'totalCost'|'paise'|'bps')
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KarbonFX FIRC Analysis Report</title>
+    <title>Inward Remittance Cost & Savings Report</title>
     <style>
         @page { 
             size: A4; 
@@ -236,7 +236,7 @@ function buildReportHTML(data: FircResult, activeTab: 'totalCost'|'paise'|'bps')
         <header class="header">
             <div class="header-content">
                 <div class="brand-text">
-                    <h1>FIRC Analysis Report</h1>
+                    <h1>Inward Remittance Cost & Savings Report</h1>
                     <p>Karbon Forex</p>
                 </div>
                 <div class="report-info">
@@ -248,8 +248,8 @@ function buildReportHTML(data: FircResult, activeTab: 'totalCost'|'paise'|'bps')
                 </div>
             </div>
             <div class="tagline">
-                <div class="main">Your bank hides fees. Karbon doesn't. Switch now.</div>
-                <div class="sub"><a href="https://www.karboncard.com" target="_blank">www.karboncard.com</a></div>
+                <div class="main">How much more will your bank take in hidden fees before you switch?</div>
+                <div class="sub"><a href="https://www.karboncard.com/accept-international-payments-india" target="_blank">www.karboncard.com</a></div>
             </div>
         </header>
 
@@ -337,7 +337,7 @@ function buildReportHTML(data: FircResult, activeTab: 'totalCost'|'paise'|'bps')
         </main>
 
         <footer class="footer">
-            <div class="footer-message">Simplify your business payments</div>
+            <div class="footer-message">UNLOCK YOUR SAVINGS TODAY!</div>
             <a href="https://karbonfx.com/signup-v2-form" target="_blank" class="signup-button">
                 Signup now
             </a>
