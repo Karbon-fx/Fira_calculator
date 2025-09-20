@@ -365,7 +365,7 @@ export function ResultsCard({
   };
 
   const handleSignUpRedirect = () => {
-    window.location.href = 'https://www.karboncard.com/accept-international-payments-india';
+    window.location.href = 'https://karbonfx.com/signup-v2-form?utm_source=fira_calculator';
   };
 
   const tabContent = {
