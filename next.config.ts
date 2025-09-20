@@ -27,6 +27,21 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  webpack: (config, {isServer}) => {
+    // Fixes npm packages that depend on server-side modules
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        dns: false,
+        fs: false,
+        child_process: false,
+        net: false,
+        tls: false,
+      };
+    }
+
+    return config;
+  },
 };
 
 export default nextConfig;

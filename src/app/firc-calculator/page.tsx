@@ -1,4 +1,4 @@
-// Version 3.0
+// Version 4.0 - With Appwrite Integration
 'use client';
 
 import { useState, useRef } from 'react';
@@ -10,6 +10,7 @@ import { calculateFircResult } from './actions';
 import { extractFiraData } from '@/ai/flows/extract-fira-data';
 import type { FircResult } from './actions';
 import type { ErrorKey } from './error-definitions';
+import { storage, databases, ID, DATABASE_ID, COLLECTION_ID, BUCKET_ID } from '@/lib/appwrite';
 
 type View = 'upload' | 'loading' | 'result' | 'error';
 
@@ -29,59 +30,134 @@ export default function FircCalculatorPage() {
     setLoadingMessage('Uploading...');
     setView('loading');
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = async () => {
-      try {
-        const dataUri = reader.result as string;
-        if (!dataUri) {
-          throw new Error('Could not read file.');
+    try {
+      // Generate unique IDs
+      const documentId = ID.unique();
+      const sessionId = Date.now().toString(); // Simple session ID for now
+      
+      console.log('Starting upload...'); // Debug log
+      
+      // 1. Upload file to Appwrite Storage
+      const uploadedFile = await storage.createFile(
+        BUCKET_ID,
+        documentId,
+        file
+      );
+      
+      console.log('File uploaded:', uploadedFile.$id); // Debug log
+      
+      // 2. Save document info to database
+      await databases.createDocument(
+        DATABASE_ID,
+        COLLECTION_ID,
+        documentId,
+        {
+          sessionId: sessionId,
+          fileName: file.name,
+          fileSize: file.size,
+          status: 'uploaded',
+          uploadDate: new Date().toISOString(),
         }
+      );
+      
+      console.log('Document saved to database'); // Debug log
 
-        // Artificial delay to ensure "Uploading..." message is visible
-        await new Promise((resolve) => setTimeout(resolve, 800));
+      // 3. Continue with your existing AI processing
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async () => {
+        try {
+          const dataUri = reader.result as string;
+          if (!dataUri) {
+            throw new Error('Could not read file.');
+          }
 
-        setLoadingMessage('Extracting details from your FIRA...');
-        const extractedData = await extractFiraData({ firaDataUri: dataUri });
-        
-        if (extractedData.error) {
+          // Artificial delay to ensure "Uploading..." message is visible
+          await new Promise((resolve) => setTimeout(resolve, 800));
+
+          setLoadingMessage('Extracting details from your FIRA...');
+          const extractedData = await extractFiraData({ firaDataUri: dataUri });
+          
+          if (extractedData.error) {
+            // Update status in database
+            await databases.updateDocument(
+              DATABASE_ID,
+              COLLECTION_ID,
+              documentId,
+              { status: 'extraction_failed' }
+            );
             setErrorKey('EXTRACTION_FAILED');
             setView('error');
             return;
-        }
+          }
 
-        // Artificial delay to ensure "Calculating..." message is visible
-        setLoadingMessage('Calculating Cost...');
-        await new Promise((resolve) => setTimeout(resolve, 800));
+          // Artificial delay to ensure "Calculating..." message is visible
+          setLoadingMessage('Calculating Cost...');
+          await new Promise((resolve) => setTimeout(resolve, 800));
 
-        const result = await calculateFircResult({ extractedData });
+          const result = await calculateFircResult({ extractedData });
 
-        if (result.error) {
-          setErrorKey(result.error);
-          setView('error');
-        } else if (result.data) {
-          setResultData(result.data);
-          setView('result');
-        } else {
-          setErrorKey('UNKNOWN_ERROR');
-          setView('error');
-        }
-      } catch (e: any) {
-        console.error(e);
-        let effectiveError: ErrorKey = 'UNKNOWN_ERROR';
-        if (e instanceof Error) {
+          if (result.error) {
+            // Update status in database
+            await databases.updateDocument(
+              DATABASE_ID,
+              COLLECTION_ID,
+              documentId,
+              { status: 'calculation_failed' }
+            );
+            setErrorKey(result.error);
+            setView('error');
+          } else if (result.data) {
+            // Update database with successful results
+            await databases.updateDocument(
+              DATABASE_ID,
+              COLLECTION_ID,
+              documentId,
+              {
+                status: 'completed',
+                bankName: result.data.bankName,
+                hiddenCost: result.data.hiddenCost,
+              }
+            );
+            
+            console.log('Processing completed successfully'); // Debug log
+            setResultData(result.data);
+            setView('result');
+          } else {
+            setErrorKey('UNKNOWN_ERROR');
+            setView('error');
+          }
+        } catch (e: any) {
+          console.error('Processing error:', e);
+          // Update status in database
+          await databases.updateDocument(
+            DATABASE_ID,
+            COLLECTION_ID,
+            documentId,
+            { status: 'processing_failed' }
+          );
+          
+          let effectiveError: ErrorKey = 'UNKNOWN_ERROR';
+          if (e instanceof Error) {
             if (e.message.includes('deadline')) {
-                effectiveError = 'TIMEOUT_ERROR';
+              effectiveError = 'TIMEOUT_ERROR';
             }
+          }
+          setErrorKey(effectiveError);
+          setView('error');
         }
-        setErrorKey(effectiveError);
+      };
+      
+      reader.onerror = () => {
+        setErrorKey('FILE_READ_ERROR');
         setView('error');
-      }
-    };
-    reader.onerror = () => {
-      setErrorKey('FILE_READ_ERROR');
+      };
+
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      setErrorKey('NETWORK_ERROR'); // ← Fixed: Changed from 'UPLOAD_FAILED' to 'NETWORK_ERROR'
       setView('error');
-    };
+    }
   };
 
   const triggerFileInput = () => {

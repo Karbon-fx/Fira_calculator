@@ -60,7 +60,6 @@ const TooltipInfoIcon = () => (
     </svg>
 );
 
-
 const UploadAnotherIcon = () => (
   <svg
     width="16"
@@ -137,6 +136,24 @@ const DownloadIcon = () => (
       d="M8 10V2"
       stroke="#0657D0"
       strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M13.3334 4L6.00002 11.3333L2.66669 8"
+      stroke="#22c55e"
+      strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
@@ -279,11 +296,13 @@ export function ResultsCard({
 }: ResultsCardProps) {
   const [activeTab, setActiveTab] = useState('totalCost');
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [pdfStatus, setPdfStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const cardRef = useRef<HTMLDivElement>(null);
 
   const tabs = [
     { id: 'totalCost', label: 'Total Cost' },
-    { id: 'paise', label: 'Paise per Unit' },
+    { id: 'paise', label: 'Paise' },
     { id: 'bps', label: 'Basis Points (bps)' },
   ];
 
@@ -308,16 +327,40 @@ export function ResultsCard({
 
   const handleDownloadPDF = async () => {
     try {
-      setIsGeneratingPDF(true);
       await generateFircReport({ 
         data, 
-        activeTab: activeTab as 'totalCost' | 'paise' | 'bps' 
+        activeTab: activeTab as 'totalCost' | 'paise' | 'bps',
+        onStart: () => {
+          setIsGeneratingPDF(true);
+          setPdfStatus('idle');
+          setErrorMessage('');
+        },
+        onSuccess: () => {
+          setIsGeneratingPDF(false);
+          setPdfStatus('success');
+          // Reset success state after 3 seconds
+          setTimeout(() => setPdfStatus('idle'), 3000);
+        },
+        onError: (error: string) => {
+          setIsGeneratingPDF(false);
+          setPdfStatus('error');
+          setErrorMessage(error);
+          // Reset error state after 5 seconds
+          setTimeout(() => {
+            setPdfStatus('idle');
+            setErrorMessage('');
+          }, 5000);
+        }
       });
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
-    } finally {
       setIsGeneratingPDF(false);
+      setPdfStatus('error');
+      setErrorMessage('Failed to generate PDF. Please try again.');
+      setTimeout(() => {
+        setPdfStatus('idle');
+        setErrorMessage('');
+      }, 5000);
     }
   };
 
@@ -351,6 +394,51 @@ export function ResultsCard({
       )}`,
     },
   }[activeTab as keyof typeof tabContent] || { value: '', description: '' };
+
+  const getDownloadButtonContent = () => {
+    if (isGeneratingPDF) {
+      return (
+        <>
+          <div className="h-4 w-4 border-2 border-[#0657D0] border-t-transparent animate-spin rounded-full"></div>
+          <span className="relative py-1 font-bold">
+            Generating PDF...
+          </span>
+        </>
+      );
+    }
+
+    if (pdfStatus === 'success') {
+      return (
+        <>
+          <CheckIcon />
+          <span className="relative py-1 font-bold text-green-600">
+            PDF Downloaded Successfully!
+          </span>
+        </>
+      );
+    }
+
+    if (pdfStatus === 'error') {
+      return (
+        <>
+          <DownloadIcon />
+          <span className="relative py-1 font-bold text-red-600">
+            {errorMessage || 'Error - Try Again'}
+          </span>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <DownloadIcon />
+        <span className="relative py-1 font-bold">
+          Download Results as PDF
+          <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#0657D0] transition-all duration-300 group-hover:w-full"></span>
+        </span>
+      </>
+    );
+  };
 
   return (
     <TooltipProvider>
@@ -400,7 +488,6 @@ export function ResultsCard({
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
           <p className="font-geist font-bold text-[16px] leading-7 align-middle">
-            
             Information on FIRA
           </p>
           <div className="flex flex-col justify-center items-start gap-[6px] self-stretch">
@@ -446,7 +533,41 @@ export function ResultsCard({
               value={`${formatNumber(data.midMarketRate, 'INR', 2)}`}
               bold={true}
             />
-            {activeTab !== 'paise' && (
+            
+            {activeTab === 'totalCost' && (
+              <DetailRow
+                label={
+                  <span className="flex items-center gap-1.5">
+                    Effective FX spread in INR
+                    <Tooltip delayDuration={100}>
+                      <TooltipTrigger asChild>
+                        <button
+                          aria-label="More info about Effective FX spread"
+                          className="flex items-center justify-center"
+                        >
+                          <InfoIcon />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-transparent border-none p-0 shadow-none">
+                        <SpreadTooltipContent data={data} />
+                      </TooltipContent>
+                    </Tooltip>
+                  </span>
+                }
+                value={`${formatNumber(data.spread, 'INR', 2)}`}
+                bold={true}
+              />
+            )}
+            
+            {activeTab === 'paise' && (
+              <DetailRow
+                label="Bank's Exchange Rate"
+                value={`${formatNumber(data.bankRate, 'INR', 4)}`}
+                bold={true}
+              />
+            )}
+            
+            {activeTab === 'bps' && (
               <DetailRow
                 label={
                   <span className="flex items-center gap-1.5">
@@ -547,7 +668,7 @@ export function ResultsCard({
 
         <div className="w-full flex flex-col items-start gap-3 self-stretch">
           <p className="font-geist font-bold text-sm leading-5 text-[#1F1F1F]">
-            Don't miss out! Save up to 4% on international payments:
+          Need better pricing that is simple & transparent?
           </p>
           <a
             href="#"
@@ -565,25 +686,16 @@ export function ResultsCard({
           <div className="w-full flex justify-between items-center">
             <button
               onClick={handleDownloadPDF}
-              className="group flex items-center gap-1.5 text-[#0657D0] font-sans font-normal text-sm leading-5"
+              className={cn(
+                "group flex items-center gap-1.5 font-sans font-normal text-sm leading-5 transition-colors",
+                isGeneratingPDF && "cursor-not-allowed",
+                pdfStatus === 'success' && "text-green-600",
+                pdfStatus === 'error' && "text-red-600",
+                pdfStatus === 'idle' && "text-[#0657D0]"
+              )}
               disabled={isGeneratingPDF}
             >
-              {isGeneratingPDF ? (
-                <>
-                  <div className="h-4 w-4 border-2 border-[#0657D0] border-t-transparent animate-spin rounded-full mr-1.5"></div>
-                  <span className="relative py-1 font-bold">
-                    Generating PDF...
-                  </span>
-                </>
-              ) : (
-                <>
-                  <DownloadIcon />
-                  <span className="relative py-1 font-bold">
-                    Download Results as PDF
-                    <span className="absolute bottom-0 left-0 block h-[1px] w-0 bg-[#0657D0] transition-all duration-300 group-hover:w-full"></span>
-                  </span>
-                </>
-              )}
+              {getDownloadButtonContent()}
             </button>
             <button
               className="group flex items-center gap-1.5 text-[#0657D0] font-sans font-normal text-sm leading-5 hover:bg-transparent"
