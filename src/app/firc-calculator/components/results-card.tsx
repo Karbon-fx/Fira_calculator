@@ -364,8 +364,13 @@ export function ResultsCard({
     }
   };
 
+  // 🔧 UPDATED: Opens signup in new tab instead of replacing current page
   const handleSignUpRedirect = () => {
-    window.location.href = 'https://karbonfx.com/signup-v2-form?utm_source=fira_calculator';
+    window.open(
+      'https://karbonfx.com/signup-v2-form?utm_source=fira_calculator',
+      '_blank',
+      'noopener,noreferrer'
+    );
   };
 
   const tabContent = {
