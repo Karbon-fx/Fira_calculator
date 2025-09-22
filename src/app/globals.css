@@ -84,3 +84,65 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* 📱 FIRC Calculator Mobile Fix */
+@layer utilities {
+  @media (max-width: 640px) {
+    /* Fix all FIRC calculator containers */
+    [class*="w-[450px]"] {
+      width: calc(100vw - 1rem) !important;
+      max-width: 450px !important;
+      margin-left: 0.5rem !important;
+      margin-right: 0.5rem !important;
+    }
+    
+    /* Fix padding on calculator components */
+    [class*="p-[48px_24px]"] {
+      padding: 1rem !important;
+    }
+    
+    /* Fix large padding */
+    .firc-calculator [class*="p-6"] {
+      padding: 1rem !important;
+    }
+    
+    /* Fix text overflow and word wrapping */
+    .firc-calculator * {
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      hyphens: auto !important;
+    }
+    
+    /* Fix button padding */
+    .firc-calculator button[class*="px-4"] {
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+    }
+    
+    /* Fix tab container overflow */
+    .firc-calculator [class*="flex"][class*="border-b"] {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Fix tab buttons */
+    .firc-calculator [class*="flex"][class*="border-b"] button {
+      white-space: nowrap !important;
+      min-width: auto !important;
+      flex-shrink: 0 !important;
+      font-size: 0.75rem !important;
+      padding: 0.5rem 0.75rem !important;
+    }
+    
+    /* Fix heights */
+    [class*="h-[749px]"] {
+      height: auto !important;
+      min-height: 500px !important;
+    }
+    
+    [class*="h-[820px]"] {
+      height: auto !important;
+      min-height: 600px !important;
+    }
+  }
+}

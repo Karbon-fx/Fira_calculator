@@ -1,4 +1,4 @@
-// Version 4.0 - With Appwrite Integration
+// Version 4.1 - With Appwrite Integration + Mobile Fix
 'use client';
 
 import { useState, useRef } from 'react';
@@ -155,7 +155,7 @@ export default function FircCalculatorPage() {
 
     } catch (error: any) {
       console.error('Upload error:', error);
-      setErrorKey('NETWORK_ERROR'); // ← Fixed: Changed from 'UPLOAD_FAILED' to 'NETWORK_ERROR'
+      setErrorKey('NETWORK_ERROR');
       setView('error');
     }
   };
@@ -204,7 +204,7 @@ export default function FircCalculatorPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center bg-[#F7FAFF] p-0">
+    <div className="firc-calculator flex min-h-screen w-full flex-col items-center bg-[#F7FAFF] p-0">
       <main className="flex items-center justify-center transition-opacity duration-300">
         <input
             type="file"
