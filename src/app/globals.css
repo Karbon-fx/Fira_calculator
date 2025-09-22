@@ -92,6 +92,7 @@
     [class*="w-[450px]"] {
       width: calc(100vw - 1rem) !important;
       max-width: 450px !important;
+      min-width: 320px !important;
       margin-left: 0.5rem !important;
       margin-right: 0.5rem !important;
     }
